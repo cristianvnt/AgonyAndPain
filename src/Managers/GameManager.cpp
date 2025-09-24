@@ -1,0 +1,34 @@
+#include "GameManager.h"
+
+GameManager::GameManager(const std::string& filePath)
+	: _configManager(filePath), _gameSettings{}
+{
+	if (filePath.empty())
+		std::cout << "NOOOOO ERROR: Filepath cannot be empty.\n";
+	LoadGameSettings();
+}
+
+void GameManager::LoadGameSettings()
+{
+	_gameSettings.SetWidth(_configManager.GetValue<int>(Settings::SECTION_GAME, Settings::WIDTH, 800))
+		.SetHeight(_configManager.GetValue<int>(Settings::SECTION_GAME, Settings::HEIGHT, 600))
+		.SetFPS(_configManager.GetValue<int>(Settings::SECTION_GAME, Settings::FPS, 60));
+}
+
+GameManagerSettings& GameManagerSettings::SetWidth(int width)
+{
+	_width = width;
+	return *this;
+}
+
+GameManagerSettings& GameManagerSettings::SetHeight(int height)
+{
+	_height = height;
+	return *this;
+}
+
+GameManagerSettings& GameManagerSettings::SetFPS(int fps)
+{
+	_fps = fps;
+	return *this;
+}

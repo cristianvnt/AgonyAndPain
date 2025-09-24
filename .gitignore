@@ -1,3 +1,16 @@
+/libs/glfw*
+/libs/glm*
+/libs/third_party*
+
+/out
+/build
+.vs/
+*.vcxproj*
+
+*.sln
+
+*.filters
+
 # Prerequisites
 *.d
 
