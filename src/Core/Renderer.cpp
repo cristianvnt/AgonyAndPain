@@ -53,7 +53,6 @@ void Renderer::FPS(Window& window)
 		_currentFPS = _fpsCounter / elapsed;
 		_fpsCounter = 0;
 		_lastFPSTime = currentTime;
-		std::cout << _currentFPS << '\n';
 		DisplayFPS(window);
 	}
 }
