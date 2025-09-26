@@ -38,6 +38,8 @@ T ConfigManager::GetValue(const std::string& section, const std::string& key, T 
 		output = std::stoi(value);
 	else if constexpr (std::is_same_v<T, float>)
 		output = std::stof(value);
+	else if constexpr (std::is_same_v<T, std::string>)
+		output = value;
 	else if constexpr (std::is_same_v<T, bool>)
 	{
 		std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) { return std::tolower(c); });

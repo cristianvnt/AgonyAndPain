@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "Managers/GameManager.h"
+
 class Window
 {
 private:
@@ -13,9 +15,10 @@ private:
 	int _width;
 	int _height;
 	std::string _title;
+	WindowModes::Type _windowMode;
 
 public:
-	Window(int width, int height, const std::string& title);
+	Window(int width, int height, const std::string& title, WindowModes::Type wMode);
 	~Window();
 
 	Window(const Window&) = delete;

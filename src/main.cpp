@@ -2,6 +2,6 @@
 
 int main()
 {
-	Game game{ "Config/settings.ini" };
+	Game game{ "config/settings.ini" };
 	game.Run();
 }

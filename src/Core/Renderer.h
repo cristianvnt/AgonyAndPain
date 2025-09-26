@@ -7,21 +7,22 @@
 class Renderer
 {
 private:
-	int _targetFPS;
-	int _frameCounter;
+	double _deltaTime;
+	double _lastFrameTime;
+
+	int _fpsCounter;
+	double _lastFPSTime;
 	double _currentFPS;
-	std::chrono::high_resolution_clock::time_point _lastFrameTime;
-	std::chrono::high_resolution_clock::time_point _lastFPSTime;
+
+	int _targetFPS;
+	double _targetFrameTime;
 
 public:
 	Renderer(int targetFps = 60);
 
 	void BeginFrame(Window& window);
 	void EndFrame(Window& window);
-	double DeltaTime();
-	void SetTargetFps(int fps) { _targetFPS = fps; }
-	int GetTargetFps() const { return _targetFPS; }
-	double GetCurrentFPS() const { return _currentFPS; }
+	double DeltaTime() const;
 
 	void FPS(Window& window);
 	void DisplayFPS(Window& window) const;

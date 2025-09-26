@@ -12,7 +12,8 @@ void GameManager::LoadGameSettings()
 {
 	_gameSettings.SetWidth(_configManager.GetValue<int>(Settings::SECTION_GAME, Settings::WIDTH, 800))
 		.SetHeight(_configManager.GetValue<int>(Settings::SECTION_GAME, Settings::HEIGHT, 600))
-		.SetFPS(_configManager.GetValue<int>(Settings::SECTION_GAME, Settings::FPS, 60));
+		.SetFPS(_configManager.GetValue<int>(Settings::SECTION_GAME, Settings::FPS, 60))
+		.SetWindowMode(WindowModes::FromString(_configManager.GetValue<std::string>(Settings::SECTION_GAME, Settings::WINDOW_MODE, "windowed")));
 }
 
 GameManagerSettings& GameManagerSettings::SetWidth(int width)
@@ -30,5 +31,11 @@ GameManagerSettings& GameManagerSettings::SetHeight(int height)
 GameManagerSettings& GameManagerSettings::SetFPS(int fps)
 {
 	_fps = fps;
+	return *this;
+}
+
+GameManagerSettings& GameManagerSettings::SetWindowMode(WindowModes::Type mode)
+{
+	_windowMode = mode;
 	return *this;
 }

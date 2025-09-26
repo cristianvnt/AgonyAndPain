@@ -7,7 +7,8 @@ Game::Game(const std::string& filePath)
 	: _gameManager(filePath),
 	_window(_gameManager.GetSettings().GetWidth(),
 			_gameManager.GetSettings().GetHeight(),
-			"AGONY and PAIN"),
+			"AGONY and PAIN",
+			_gameManager.GetSettings().GetWindowMode()),
 	_renderer(_gameManager.GetSettings().GetFPS()),
 	_isRunning(false)
 {
@@ -21,6 +22,7 @@ void Game::Initialize()
 	std::cout << "Initializing game...\n";
 	std::cout << "Resolution: " << settings.GetWidth() << "x" << settings.GetHeight() << "\n";
 	std::cout << "Target FPS: " << settings.GetFPS() << "\n";
+	std::cout << "Window Mode: " << WindowModes::ToString(settings.GetWindowMode()) << "\n";
 
 	if (!_window.Initialize())
 	{
@@ -54,10 +56,8 @@ void Game::Run()
 {
 	while (_isRunning && !_window.ShouldClose())
 	{
-		double deltaTime = _renderer.DeltaTime();
-
 		ProcessInput();
-		Update(deltaTime);
+		Update(_renderer.DeltaTime());
 
 		_renderer.BeginFrame(_window);
 		Render();

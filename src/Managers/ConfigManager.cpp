@@ -10,6 +10,8 @@ ConfigManager::ConfigManager(const std::string& file) : _currentSection{ "GLOBAL
 
 void ConfigManager::Load(const std::string& file)
 {
+	std::cout << "HMMMMM DEBUG: Loading config from: " << file << "\n";
+
 	std::ifstream data{ file };
 
 	if (!data.is_open())
@@ -36,6 +38,8 @@ void ConfigManager::Load(const std::string& file)
 		{
 			std::string_view key = parseData.substr(0, eq);
 			std::string_view value = parseData.substr(eq + 1);
+
+			std::cout << "HMMMMM DEBUG: Found key: '" << key << "' = '" << value << "' in section: " << _currentSection << "\n";
 
 			std::size_t foundFirst = key.find_first_not_of(" \t\f\v\n\r");
 			std::size_t foundLast = key.find_last_not_of(" \t\f\v\n\r");
