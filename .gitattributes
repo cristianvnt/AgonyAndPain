@@ -1,2 +1,2 @@
-libs/glad/* linguist-vendored
-libs/stb/* linguist-vendored
+third_party/* linguist-vendored
+*.h linguist-language=C++
