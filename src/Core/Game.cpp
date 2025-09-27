@@ -1,7 +1,10 @@
 #include "Game.h"
 
 #include <GLFW/glfw3.h>
+
 #include <iostream>
+
+#include "VertexBufferLayout.h"
 
 Game::Game(const std::string& filePath)
 	: _gameManager(filePath),
@@ -44,23 +47,22 @@ void Game::Initialize()
 		1, 2, 3
 	};
 
-	GL_CHECK(glGenVertexArrays(1, &_VAO));
-	GL_CHECK(glBindVertexArray(_VAO));
+	_vao = std::make_unique<VertexArray>();
+	_vbo = std::make_unique<VertexBuffer>(vertices, 4 * 3 * sizeof(float));
 
-	_buffer = std::make_unique<VertexBuffer>(vertices, 4 * 3 * sizeof(float));
+	VertexBufferLayout layout;
+	layout.Push<float>(3);
+	_vao->AddBuffer(*_vbo, layout);
 
-	GL_CHECK(glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, 3 * sizeof(float), (void*)0));
-	GL_CHECK(glEnableVertexAttribArray(0));
-
-	_EBO = std::make_unique<IndexBuffer>(indices, 2 * 3);
-
+	_ibo = std::make_unique<IndexBuffer>(indices, 2 * 3);
 	_shader = std::make_unique<Shader>("resources/shader.vert", "resources/shader.frag");
 
-	GL_CHECK(glBindVertexArray(0));
-	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
-	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+	_vao->Unbind();
+	_vbo->Unbind();
+	_ibo->Unbind();
+	_shader->Unbind();
 
-	GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
+	GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
 	_isRunning = true;
 	std::cout << "YIPPEEEEEEEE\n";
 }
@@ -81,11 +83,9 @@ void Game::Update(double deltaTime)
 void Game::Render()
 {
 	_shader->Bind();
-	GL_CHECK(glBindVertexArray(_VAO));
-	_EBO->Bind();
-	float randomGreen = (glm::sin(static_cast<float>(glfwGetTime())) / 2.f) + 0.3f;
+	float randomGreen = (glm::sin(static_cast<float>(glfwGetTime()))) + 0.1f;
 	_shader->SetUniformVec4("someColor", glm::vec4{ 0.8f, 0.5f, randomGreen, 1.f });
-	GL_CHECK(glDrawElements(GL_TRIANGLES, _EBO->GetCount(), GL_UNSIGNED_INT, nullptr));
+	_renderer.Draw(*_vao, *_ibo, *_shader);
 }
 
 void Game::Run()

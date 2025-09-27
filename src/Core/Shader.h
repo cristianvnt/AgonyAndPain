@@ -35,7 +35,7 @@ public:
 
 	int GetUniformLocation(const std::string& uniformName);
 
-	void SetUniformVec4(const std::string uniformName, const glm::vec4& value);
+	void SetUniformVec4(const std::string& uniformName, const glm::vec4& value);
 };
 
 #endif

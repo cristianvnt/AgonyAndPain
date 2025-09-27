@@ -4,6 +4,10 @@
 #include <chrono>
 #include "Window.h"
 
+#include "VertexArray.h"
+#include "IndexBuffer.h"
+#include "Shader.h"
+
 class Renderer
 {
 private:
@@ -19,6 +23,8 @@ private:
 
 public:
 	Renderer(int targetFps = 60);
+
+	void Draw(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const;
 
 	void BeginFrame(Window& window);
 	void EndFrame(Window& window);

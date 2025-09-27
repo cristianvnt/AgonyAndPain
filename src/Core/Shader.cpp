@@ -118,7 +118,7 @@ int Shader::GetUniformLocation(const std::string& uniformName)
 	return location;
 }
 
-void Shader::SetUniformVec4(const std::string uniformName, const glm::vec4& value)
+void Shader::SetUniformVec4(const std::string& uniformName, const glm::vec4& value)
 {
 	GL_CHECK(glUniform4fv(GetUniformLocation(uniformName), 1, glm::value_ptr(value)));
 }

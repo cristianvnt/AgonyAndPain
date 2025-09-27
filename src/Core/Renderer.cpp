@@ -12,6 +12,14 @@ Renderer::Renderer(int targetFps /*= 60*/)
 
 }
 
+void Renderer::Draw(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const
+{
+	shader.Bind();
+	vao.Bind();
+	ibo.Bind();
+	GL_CHECK(glDrawElements(GL_TRIANGLES, ibo.GetCount(), GL_UNSIGNED_INT, nullptr));
+}
+
 void Renderer::BeginFrame(Window& window)
 {
 	FPS(window);
