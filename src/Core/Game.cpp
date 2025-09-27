@@ -31,31 +31,36 @@ void Game::Initialize()
 	}
 	
 	// temporary init
-	float vertices[] = 
-	{
-		-0.5f, -0.5f, 0.0f,
+	float vertices[] = {
+		 0.5f,  0.5f, 0.0f,
 		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f
+		-0.5f, -0.5f, 0.0f,
+		-0.5f,  0.5f, 0.0f
 	};
 
-	// generate VAO and VBO buffers
+	unsigned int indices[] =
+	{
+		0, 1, 3,
+		1, 2, 3
+	};
+
 	GL_CHECK(glGenVertexArrays(1, &_VAO));
-	GL_CHECK(glGenBuffers(1, &_VBO));
-	// bind VAO then any binds will bind to this one
 	GL_CHECK(glBindVertexArray(_VAO));
-	// copy vertices array in buffer in order to be used
-	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, _VBO));
-	GL_CHECK(glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW));
-	// set vertex attribute pointers and enable it
+
+	_buffer = std::make_unique<VertexBuffer>(vertices, 4 * 3 * sizeof(float));
+
 	GL_CHECK(glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, 3 * sizeof(float), (void*)0));
 	GL_CHECK(glEnableVertexAttribArray(0));
 
-	// unbind VBO and VAO
-	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
-	GL_CHECK(glBindVertexArray(0));
+	_EBO = std::make_unique<IndexBuffer>(indices, 2 * 3);
 
 	_shader = std::make_unique<Shader>("resources/shader.vert", "resources/shader.frag");
 
+	GL_CHECK(glBindVertexArray(0));
+	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+
+	GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
 	_isRunning = true;
 	std::cout << "YIPPEEEEEEEE\n";
 }
@@ -76,12 +81,11 @@ void Game::Update(double deltaTime)
 void Game::Render()
 {
 	_shader->Bind();
-	// VAO just one and already bound, so for things being a bit more organized
-	glBindVertexArray(_VAO);
-
-	float randomGreen = (glm::sin(glfwGetTime()) / 2.f) + 0.3f;
+	GL_CHECK(glBindVertexArray(_VAO));
+	_EBO->Bind();
+	float randomGreen = (glm::sin(static_cast<float>(glfwGetTime())) / 2.f) + 0.3f;
 	_shader->SetUniformVec4("someColor", glm::vec4{ 0.8f, 0.5f, randomGreen, 1.f });
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	GL_CHECK(glDrawElements(GL_TRIANGLES, _EBO->GetCount(), GL_UNSIGNED_INT, nullptr));
 }
 
 void Game::Run()
@@ -95,9 +99,4 @@ void Game::Run()
 		Render();
 		_renderer.EndFrame(_window);
 	}
-
-	// optional deallocations
-	GL_CHECK(glDeleteVertexArrays(1, &_VAO));
-	GL_CHECK(glDeleteBuffers(1, &_VBO));
-	_shader->Unbind();
 }

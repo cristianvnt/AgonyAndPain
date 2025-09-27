@@ -1,11 +1,13 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <string>
+
 #include "Managers/GameManager.h"
 #include "Renderer.h"
 #include "Shader.h"
-
-#include <string>
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 class Game
 {
@@ -17,7 +19,8 @@ private:
 
 	// temporary
 	unsigned int _VAO;
-	unsigned int _VBO;
+	std::unique_ptr<VertexBuffer> _buffer;
+	std::unique_ptr<IndexBuffer> _EBO;
 	std::unique_ptr<Shader> _shader;
 
 	void Initialize();
