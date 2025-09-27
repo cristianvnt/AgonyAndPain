@@ -3,6 +3,7 @@
 
 #include "Managers/GameManager.h"
 #include "Renderer.h"
+#include "Shader.h"
 
 #include <string>
 
@@ -13,6 +14,11 @@ private:
 	Renderer _renderer;
 	Window _window;
 	bool _isRunning;
+
+	// temporary
+	unsigned int _VAO;
+	unsigned int _VBO;
+	std::unique_ptr<Shader> _shader;
 
 	void Initialize();
 	void ProcessInput();

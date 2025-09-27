@@ -3,13 +3,12 @@
 
 #include "ConfigManager.h"
 
-class Settings
+struct Settings
 {
-public:
 	static constexpr const char* SECTION_GAME = "GAME";
 	static constexpr const char* WIDTH = "SCREEN_WIDTH";
 	static constexpr const char* HEIGHT = "SCREEN_HEIGHT";
-	static constexpr const char* FPS = "FPS";
+	static constexpr const char* TARGET_FPS = "TARGET_FPS";
 	static constexpr const char* WINDOW_MODE = "WINDOW_MODE";
 };
 
@@ -55,18 +54,18 @@ class GameManagerSettings
 private:
 	int _width{};
 	int _height{};
-	int _fps{};
+	int _targetFps{};
 	WindowModes::Type _windowMode{};
 
 public:
 	int GetWidth() const { return _width; }
 	int GetHeight() const { return _height; }
-	int GetFPS() const { return _fps; }
+	int GetTargetFPS() const { return _targetFps; }
 	WindowModes::Type GetWindowMode() const { return _windowMode; }
 
 	GameManagerSettings& SetWidth(int width);
 	GameManagerSettings& SetHeight(int height);
-	GameManagerSettings& SetFPS(int fps);
+	GameManagerSettings& SetTargetFPS(int targetFPS);
 	GameManagerSettings& SetWindowMode(WindowModes::Type mode);
 };
 
