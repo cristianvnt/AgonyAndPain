@@ -12,7 +12,7 @@ namespace Path
 	namespace Texture
 	{
 		constexpr std::string_view TEXTURE = "resources/assets/face.png";
-		constexpr std::string_view TEXTURE1 = "resources/assets/container.png";
+		constexpr std::string_view TEXTURE1 = "resources/assets/container.jpg";
 	}
 }
 

@@ -71,7 +71,7 @@ void Game::Initialize()
 	_texture = std::make_unique<Texture>(Path::Texture::TEXTURE);
 	_texture2 = std::make_unique<Texture>(Path::Texture::TEXTURE1);
 	_texture->Bind();
-	//_texture2->Bind(1);
+	_texture2->Bind(1);
 
 	_shader->SetUniform1i("u_Texture", 0);
 	_shader->SetUniform1i("u_Texture2", 1);
@@ -81,6 +81,8 @@ void Game::Initialize()
 	_vbo->Unbind();
 	_ibo->Unbind();
 	_shader->Unbind();
+	_texture->Unbind();
+	_texture2->Unbind();
 
 	_isRunning = true;
 	std::cout << "YIPPEEEEEEEE\n";
