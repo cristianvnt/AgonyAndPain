@@ -9,6 +9,7 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
+#include "Texture.h"
 
 class Game
 {
@@ -23,6 +24,8 @@ private:
 	std::unique_ptr<VertexBuffer> _vbo;
 	std::unique_ptr<IndexBuffer> _ibo;
 	std::unique_ptr<Shader> _shader;
+	std::unique_ptr<Texture> _texture;
+	std::unique_ptr<Texture> _texture2;
 
 	void Initialize();
 	void ProcessInput();

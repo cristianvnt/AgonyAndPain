@@ -30,6 +30,9 @@ public:
 	bool ShouldClose() const;
 	void Clear(float r, float g, float b, float a);
 	GLFWwindow* GetGLFWwindow() { return _window; }
+
+	int GetWidth() const { return _width; }
+	int GetHeight() const { return _height; }
 };
 
 #endif

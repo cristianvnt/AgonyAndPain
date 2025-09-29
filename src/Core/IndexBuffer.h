@@ -4,7 +4,7 @@
 class IndexBuffer
 {
 private:
-	unsigned int _bufferID;
+	unsigned int _eboID;
 	unsigned int _count;
 
 public:

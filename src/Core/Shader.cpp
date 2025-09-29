@@ -1,37 +1,38 @@
 #include "Shader.h"
+#include "Shader.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
 #include "glm/gtc/type_ptr.hpp"
 
-Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
-	: _programID(0)
+Shader::Shader(std::string_view vertexPath, std::string_view fragmentPath)
+	: _shaderProgramID(0)
 {
 	ShaderProgramSource source = ParseShader(vertexPath, fragmentPath);
 	std::cout << source.vertexSource << '\n' << source.fragmentSource << "\n";
-	_programID = CreateShaderProgram(source.vertexSource, source.fragmentSource);
+	_shaderProgramID = CreateShaderProgram(source.vertexSource, source.fragmentSource);
 }
 
 Shader::~Shader()
 {
-	GL_CHECK(glDeleteProgram(_programID));
+	GL_CHECK(glDeleteProgram(_shaderProgramID));
 }
 
-ShaderProgramSource Shader::ParseShader(const std::string& vertexPath, const std::string& fragmentPath)
+ShaderProgramSource Shader::ParseShader(std::string_view vertexPath, std::string_view fragmentPath)
 {
 	std::string vertCode;
 	std::string fragCode;
-	std::fstream vShaderFile;
-	std::fstream fShaderFile;
+	std::ifstream vShaderFile;
+	std::ifstream fShaderFile;
 
 	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
 	try
 	{
-		vShaderFile.open(vertexPath);
-		fShaderFile.open(fragmentPath);
+		vShaderFile.open(std::string(vertexPath));
+		fShaderFile.open(std::string(fragmentPath));
 		std::stringstream vShaderStream;
 		std::stringstream fShaderStream;
 
@@ -51,7 +52,7 @@ ShaderProgramSource Shader::ParseShader(const std::string& vertexPath, const std
 		std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: " << err.what() << "\n";
 	}
 
-	return ShaderProgramSource{ vertCode.c_str(), fragCode.c_str() };
+	return ShaderProgramSource{ vertCode, fragCode };
 }
 
 unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
@@ -96,7 +97,7 @@ unsigned int Shader::CreateShaderProgram(const std::string& vertexShader, const 
 
 void Shader::Bind() const
 {
-	GL_CHECK(glUseProgram(_programID));
+	GL_CHECK(glUseProgram(_shaderProgramID));
 }
 
 void Shader::Unbind() const
@@ -104,21 +105,31 @@ void Shader::Unbind() const
 	GL_CHECK(glUseProgram(0));
 }
 
-int Shader::GetUniformLocation(const std::string& uniformName)
+int Shader::GetUniformLocation(const std::string& name)
 {
-	if (_uniformLocationCache.find(uniformName) != _uniformLocationCache.end())
-		return _uniformLocationCache[uniformName];
+	if (_uniformLocationCache.find(name) != _uniformLocationCache.end())
+		return _uniformLocationCache[name];
 
 	int location;
-	GL_CHECK(location = glGetUniformLocation(_programID, uniformName.c_str()));
+	GL_CHECK(location = glGetUniformLocation(_shaderProgramID, name.c_str()));
 	if (location == -1)
-		std::cout << "AAAAAA WARNING: uniform " << uniformName << " doesn't exist!\n";
+		std::cout << "AAAAAA WARNING: uniform " << name << " doesn't exist!\n";
 
-	_uniformLocationCache[uniformName] = location;
+	_uniformLocationCache[name] = location;
 	return location;
 }
 
-void Shader::SetUniformVec4(const std::string& uniformName, const glm::vec4& value)
+void Shader::SetUniform1i(const std::string& name, int value)
 {
-	GL_CHECK(glUniform4fv(GetUniformLocation(uniformName), 1, glm::value_ptr(value)));
+	GL_CHECK(glUniform1i(GetUniformLocation(name), value));
+}
+
+void Shader::SetUniformVec4(const std::string& name, const glm::vec4& value)
+{
+	GL_CHECK(glUniform4fv(GetUniformLocation(name), 1, glm::value_ptr(value)));
+}
+
+void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix)
+{
+	GL_CHECK(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
 }

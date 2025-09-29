@@ -1,10 +1,12 @@
 #include "Game.h"
 
 #include <GLFW/glfw3.h>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
 
 #include "VertexBufferLayout.h"
+#include "Utils/Utils.h"
 
 Game::Game(const std::string& filePath)
 	: _gameManager(filePath),
@@ -35,34 +37,51 @@ void Game::Initialize()
 	
 	// temporary init
 	float vertices[] = {
-		 0.5f,  0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		-0.5f, -0.5f, 0.0f,
-		-0.5f,  0.5f, 0.0f
+		// pos		   // tex
+		100.f, 100.f, 0.f, 0.f, // 0
+		270.f, 100.f, 1.f, 0.f, // 1
+		270.f, 270.f, 1.f, 1.f, // 2
+		100.f, 270.f, 0.f, 1.f  // 3
 	};
 
 	unsigned int indices[] =
 	{
-		0, 1, 3,
-		1, 2, 3
+		0, 1, 2,
+		2, 3, 0
 	};
 
+	GL_CHECK(glEnable(GL_BLEND));
+	GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
 	_vao = std::make_unique<VertexArray>();
-	_vbo = std::make_unique<VertexBuffer>(vertices, 4 * 3 * sizeof(float));
+	_vbo = std::make_unique<VertexBuffer>(vertices, 4 * 4 * sizeof(float));
 
 	VertexBufferLayout layout;
-	layout.Push<float>(3);
+	layout.Push<float>(2);
+	layout.Push<float>(2);
 	_vao->AddBuffer(*_vbo, layout);
 
 	_ibo = std::make_unique<IndexBuffer>(indices, 2 * 3);
-	_shader = std::make_unique<Shader>("resources/shader.vert", "resources/shader.frag");
+
+	glm::mat4 proj = glm::ortho(0.f, (float)_window.GetWidth(), 0.f, (float)_window.GetHeight(), -1.f, 1.f);
+
+	_shader = std::make_unique<Shader>(Path::Shader::VERTEX, Path::Shader::FRAGMENT);
+	_shader->Bind();
+
+	_texture = std::make_unique<Texture>(Path::Texture::TEXTURE);
+	_texture2 = std::make_unique<Texture>(Path::Texture::TEXTURE1);
+	_texture->Bind();
+	//_texture2->Bind(1);
+
+	_shader->SetUniform1i("u_Texture", 0);
+	_shader->SetUniform1i("u_Texture2", 1);
+	_shader->SetUniformMat4f("u_Proj", proj);
 
 	_vao->Unbind();
 	_vbo->Unbind();
 	_ibo->Unbind();
 	_shader->Unbind();
 
-	GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
 	_isRunning = true;
 	std::cout << "YIPPEEEEEEEE\n";
 }
@@ -73,6 +92,12 @@ void Game::ProcessInput()
 
 	if (glfwGetKey(_window.GetGLFWwindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		_isRunning = false;
+
+	if (glfwGetKey(_window.GetGLFWwindow(), GLFW_KEY_X) == GLFW_PRESS)
+		GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
+
+	if (glfwGetKey(_window.GetGLFWwindow(), GLFW_KEY_Z) == GLFW_PRESS)
+		GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
 }
 
 void Game::Update(double deltaTime)

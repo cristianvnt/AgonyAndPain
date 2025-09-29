@@ -4,19 +4,19 @@
 
 VertexBuffer::VertexBuffer(const void* data, size_t size)
 {
-	GL_CHECK(glGenBuffers(1, &_bufferID));
-	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, _bufferID));
+	GL_CHECK(glGenBuffers(1, &_vboID));
+	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, _vboID));
 	GL_CHECK(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
 }
 
 VertexBuffer::~VertexBuffer()
 {
-	GL_CHECK(glDeleteBuffers(1, &_bufferID));
+	GL_CHECK(glDeleteBuffers(1, &_vboID));
 }
 
 void VertexBuffer::Bind() const
 {
-	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, _bufferID));
+	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, _vboID));
 }
 
 void VertexBuffer::Unbind() const
