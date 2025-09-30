@@ -131,5 +131,5 @@ void Shader::SetUniformVec4(const std::string& name, const glm::vec4& value)
 
 void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix)
 {
-	GL_CHECK(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
+	GL_CHECK(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(matrix)));
 }

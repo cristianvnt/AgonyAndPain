@@ -11,7 +11,7 @@ private:
 	unsigned char* _localBuffer;
 	int _width;
 	int _height;
-	int _bpp; // bits per pixel
+	int _bpp;
 
 public:
 	Texture(std::string_view path);

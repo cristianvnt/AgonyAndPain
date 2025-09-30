@@ -36,53 +36,95 @@ void Game::Initialize()
 	}
 	
 	// temporary init
-	float vertices[] = {
-		// pos		   // tex
-		100.f, 100.f, 0.f, 0.f, // 0
-		270.f, 100.f, 1.f, 0.f, // 1
-		270.f, 270.f, 1.f, 1.f, // 2
-		100.f, 270.f, 0.f, 1.f  // 3
+	float vertices[] =
+	{
+		 // pos				 //tex
+		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // 0
+		 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, // 1
+		 0.5f,  0.5f, -0.5f, 1.0f, 1.0f, // 2
+		-0.5f,  0.5f, -0.5f, 0.0f, 1.0f, // 3
+
+		// front
+		-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, // 4
+		 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, // 5
+		 0.5f,  0.5f,  0.5f, 1.0f, 1.0f, // 6
+		-0.5f,  0.5f,  0.5f, 0.0f, 1.0f, // 7
+
+		// left
+		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // 8
+		-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, // 9
+		-0.5f,  0.5f,  0.5f, 1.0f, 1.0f, // 10
+		-0.5f,  0.5f, -0.5f, 0.0f, 1.0f, // 11
+
+		// right
+		 0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // 12
+		 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, // 13
+		 0.5f,  0.5f,  0.5f, 1.0f, 1.0f, // 14
+		 0.5f,  0.5f, -0.5f, 0.0f, 1.0f, // 15
+
+		 // bottom
+		 -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // 16
+		  0.5f, -0.5f, -0.5f, 1.0f, 0.0f, // 17
+		  0.5f, -0.5f,  0.5f, 1.0f, 1.0f, // 18
+		 -0.5f, -0.5f,  0.5f, 0.0f, 1.0f, // 19
+
+		 // top
+		 -0.5f,  0.5f, -0.5f, 0.0f, 0.0f, // 20
+		  0.5f,  0.5f, -0.5f, 1.0f, 0.0f, // 21
+		  0.5f,  0.5f,  0.5f, 1.0f, 1.0f, // 22
+		 -0.5f,  0.5f,  0.5f, 0.0f, 1.0f  // 23
 	};
 
 	unsigned int indices[] =
 	{
-		0, 1, 2,
-		2, 3, 0
+		0, 1, 2, 2, 3, 0, // back
+		4, 5, 6, 6, 7, 4, // front
+		8, 9, 10, 10, 11, 8, // left
+		12, 13, 14, 14, 15, 12, // right
+		16, 17, 18, 18, 19, 16, // bottom
+		20, 21, 22, 22, 23, 20  // top
+	};
+
+	_cubePositions =
+	{
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(2.0f, 5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f, 3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f, 2.0f, -2.5f),
+		glm::vec3(1.5f, 0.2f, -1.5f),
+		glm::vec3(-1.3f, 1.0f, -1.5f)
 	};
 
 	GL_CHECK(glEnable(GL_BLEND));
 	GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
 	_vao = std::make_unique<VertexArray>();
-	_vbo = std::make_unique<VertexBuffer>(vertices, 4 * 4 * sizeof(float));
+	_vbo = std::make_unique<VertexBuffer>(vertices, 24 * 5 * sizeof(float));
 
 	VertexBufferLayout layout;
-	layout.Push<float>(2);
+	layout.Push<float>(3);
 	layout.Push<float>(2);
 	_vao->AddBuffer(*_vbo, layout);
 
-	_ibo = std::make_unique<IndexBuffer>(indices, 2 * 3);
+	_ibo = std::make_unique<IndexBuffer>(indices, 6 * 6);
 
-	glm::mat4 proj = glm::ortho(0.f, (float)_window.GetWidth(), 0.f, (float)_window.GetHeight(), -1.f, 1.f);
+	glm::mat4 proj = glm::perspective(glm::radians(60.f), (float)_window.GetWidth() / (float)_window.GetHeight(), 0.1f, 100.f);
+	glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -5.f));
+	//glm::mat4 model = glm::rotate(glm::mat4(1.f), glm::radians(-50.f), glm::vec3(1.f, 1.f, 0.f));
+
+	_mvp = proj * view;
 
 	_shader = std::make_unique<Shader>(Path::Shader::VERTEX, Path::Shader::FRAGMENT);
 	_shader->Bind();
 
-	_texture = std::make_unique<Texture>(Path::Texture::TEXTURE);
-	_texture2 = std::make_unique<Texture>(Path::Texture::TEXTURE1);
+	_texture = std::make_unique<Texture>(Path::Texture::TEXTURE1);
 	_texture->Bind();
-	_texture2->Bind(1);
 
 	_shader->SetUniform1i("u_Texture", 0);
-	_shader->SetUniform1i("u_Texture2", 1);
-	_shader->SetUniformMat4f("u_Proj", proj);
-
-	_vao->Unbind();
-	_vbo->Unbind();
-	_ibo->Unbind();
-	_shader->Unbind();
-	_texture->Unbind();
-	_texture2->Unbind();
 
 	_isRunning = true;
 	std::cout << "YIPPEEEEEEEE\n";
@@ -110,9 +152,16 @@ void Game::Update(double deltaTime)
 void Game::Render()
 {
 	_shader->Bind();
-	float randomGreen = (glm::sin(static_cast<float>(glfwGetTime()))) + 0.1f;
-	_shader->SetUniformVec4("someColor", glm::vec4{ 0.8f, 0.5f, randomGreen, 1.f });
-	_renderer.Draw(*_vao, *_ibo, *_shader);
+	for (int i = 0; i < 10; i++)
+	{
+		float randomGreen = (glm::sin(static_cast<float>(glfwGetTime()))) + 0.3f * i;
+		glm::mat4 model = glm::translate(glm::mat4(1.f), _cubePositions[i]);
+		float angle = 20.f * i;
+		model = glm::rotate(model, glm::radians(angle), _cubePositions[i]);
+		_shader->SetUniformVec4("someColor", glm::vec4{ 0.8f, 0.5f, randomGreen, 1.f });
+		_shader->SetUniformMat4f("u_Proj", _mvp * model);
+		_renderer.Draw(*_vao, *_ibo, *_shader);
+	}
 }
 
 void Game::Run()

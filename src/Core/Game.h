@@ -25,7 +25,8 @@ private:
 	std::unique_ptr<IndexBuffer> _ibo;
 	std::unique_ptr<Shader> _shader;
 	std::unique_ptr<Texture> _texture;
-	std::unique_ptr<Texture> _texture2;
+	std::vector<glm::vec3> _cubePositions;
+	glm::mat4 _mvp{};
 
 	void Initialize();
 	void ProcessInput();

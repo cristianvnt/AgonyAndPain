@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "Utils/Logger.h"
+
 Window::Window(int width, int height, const std::string& title, WindowModes::Type wMode)
 	: _window{ nullptr }, _width{ width }, _height{ height }, _title{ title }, _windowMode{ wMode }
 {
@@ -13,6 +15,11 @@ Window::~Window()
 	if (_window)
 		glfwDestroyWindow(_window);
 	glfwTerminate();
+}
+
+static void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
+{
+	GL_CHECK(glViewport(0, 0, width, height));
 }
 
 bool Window::Initialize()
@@ -50,7 +57,9 @@ bool Window::Initialize()
 	}
 
 	glfwMakeContextCurrent(_window);
-	glfwSwapInterval(1);
+	glfwSetFramebufferSizeCallback(_window, FramebufferSizeCallback);
+
+	glfwSwapInterval(0);
 
 	if (!gladLoadGLLoader(GLADloadproc(glfwGetProcAddress)))
 	{
@@ -58,7 +67,8 @@ bool Window::Initialize()
 		return false;
 	}
 
-	glViewport(0, 0, _width, _height);
+	GL_CHECK(glEnable(GL_DEPTH_TEST));
+	
 	return true;
 }
 
@@ -79,7 +89,7 @@ bool Window::ShouldClose() const
 
 void Window::Clear(float r, float g, float b, float a)
 {
-	glClearColor(r, g, b, a);
-	glClear(GL_COLOR_BUFFER_BIT);
+	GL_CHECK(glClearColor(r, g, b, a));
+	GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
 
