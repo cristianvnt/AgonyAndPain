@@ -60,7 +60,7 @@ void Renderer::FPS(Window& window)
 	double elapsed = now - _lastFPSTime;
 
 	_fpsCounter++;
-	if (elapsed >= 0.1)
+	if (elapsed >= 0.2)
 	{
 		_currentFPS = _fpsCounter / elapsed;
 		_fpsCounter = 0;

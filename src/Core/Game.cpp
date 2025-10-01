@@ -190,7 +190,7 @@ void Game::Run()
 		Render();
 		{
 			ImGui::Begin("BLABLABLA");
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			ImGui::Text("Application average %.3lf ms/frame (%d FPS)", 1000.0 / _renderer.GetFPS(), _renderer.GetFPS());
 			ImGui::End();
 
 			ImGui::Render();

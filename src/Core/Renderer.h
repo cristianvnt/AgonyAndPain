@@ -33,6 +33,8 @@ public:
 
 	void FPS(Window& window);
 	void DisplayFPS(Window& window) const;
+
+	int GetFPS() const { return _currentFPS; }
 };
 
 #endif
