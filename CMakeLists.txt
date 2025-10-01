@@ -92,6 +92,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     stb_image
     imgui
     OpenGL::GL
+    winmm
 )
 
 # on linux

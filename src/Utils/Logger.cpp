@@ -42,12 +42,12 @@ void LOG::LogProgram(unsigned int programID)
 	std::cerr << "ERROR::PROGRAM::LINKING_FAILED\n" << infoLog << "\n";
 }
 
-void ERROR::glClearError()
+void ERR::glClearError()
 {
 	while (glGetError() != GL_NO_ERROR);
 }
 
-bool ERROR::glCheckError_(const char* func, const char* file, int line)
+bool ERR::glCheckError_(const char* func, const char* file, int line)
 {
 	while (GLenum err = glGetError())
 	{
@@ -57,7 +57,7 @@ bool ERROR::glCheckError_(const char* func, const char* file, int line)
 	return true;
 }
 
-constexpr const char* ERROR::GetGLErrorString(GLenum err)
+constexpr const char* ERR::GetGLErrorString(GLenum err)
 {
 	switch (err)
 	{

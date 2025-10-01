@@ -9,7 +9,7 @@ namespace LOG
 	void LogProgram(unsigned int programID);
 }
 
-namespace ERROR
+namespace ERR
 {
 	void glClearError();
 	bool glCheckError_(const char* func, const char* file, int line);
@@ -24,9 +24,9 @@ namespace ERROR
 
 #define GL_CHECK(x) \
 	do { \
-		ERROR::glClearError(); \
+		ERR::glClearError(); \
 		x; \
-		GL_ASSERT(ERROR::glCheckError_(#x, __FILE__, __LINE__)); \
+		GL_ASSERT(ERR::glCheckError_(#x, __FILE__, __LINE__)); \
 	} while (false)
 
 #endif

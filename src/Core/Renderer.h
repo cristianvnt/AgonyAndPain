@@ -13,6 +13,7 @@ class Renderer
 private:
 	double _deltaTime;
 	double _lastFrameTime;
+	double _startFrameTime;
 
 	int _fpsCounter;
 	double _lastFPSTime;

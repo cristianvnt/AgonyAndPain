@@ -1,6 +1,8 @@
 #include "Game.h"
 
-#include <iostream>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <mmsystem.h>
 
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -173,6 +175,7 @@ void Game::Render()
 
 void Game::Run()
 {
+	timeBeginPeriod(1);
 	while (_isRunning && !_window.ShouldClose())
 	{
 		ImGui_ImplOpenGL3_NewFrame();
@@ -194,4 +197,5 @@ void Game::Run()
 		}
 		_renderer.EndFrame(_window);
 	}
+	timeEndPeriod(1);
 }
