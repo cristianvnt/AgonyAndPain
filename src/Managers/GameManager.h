@@ -6,6 +6,7 @@
 struct Settings
 {
 	static constexpr const char* SECTION_GAME = "GAME";
+	static constexpr const char* TITLE = "TITLE";
 	static constexpr const char* WIDTH = "SCREEN_WIDTH";
 	static constexpr const char* HEIGHT = "SCREEN_HEIGHT";
 	static constexpr const char* TARGET_FPS = "TARGET_FPS";
@@ -52,17 +53,20 @@ namespace WindowModes
 class GameManagerSettings
 {
 private:
+	std::string _title{};
 	int _width{};
 	int _height{};
 	int _targetFps{};
 	WindowModes::Type _windowMode{};
 
 public:
+	std::string GetTitle() const { return _title; }
 	int GetWidth() const { return _width; }
 	int GetHeight() const { return _height; }
 	int GetTargetFPS() const { return _targetFps; }
 	WindowModes::Type GetWindowMode() const { return _windowMode; }
 
+	GameManagerSettings& SetTitle(std::string title);
 	GameManagerSettings& SetWidth(int width);
 	GameManagerSettings& SetHeight(int height);
 	GameManagerSettings& SetTargetFPS(int targetFPS);

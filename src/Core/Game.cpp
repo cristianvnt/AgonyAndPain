@@ -1,8 +1,8 @@
-#include "Game.h"
-
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <mmsystem.h>
+
+#include "Game.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -13,7 +13,7 @@ Game::Game(const std::string& filePath)
 	: _gameManager(filePath),
 	_window{ _gameManager.GetSettings().GetWidth(),
 			_gameManager.GetSettings().GetHeight(),
-			"AGONY and PAIN",
+			_gameManager.GetSettings().GetTitle(),
 			_gameManager.GetSettings().GetWindowMode() },
 	_renderer(_gameManager.GetSettings().GetTargetFPS()),
 	_isRunning(false)
@@ -26,6 +26,7 @@ void Game::Initialize()
 	const auto& settings = _gameManager.GetSettings();
 
 	std::cout << "Initializing game...\n";
+	std::cout << "Title: " << settings.GetTitle() << "\n";
 	std::cout << "Resolution: " << settings.GetWidth() << "x" << settings.GetHeight() << "\n";
 	std::cout << "Target FPS: " << settings.GetTargetFPS() << "\n";
 	std::cout << "Window Mode: " << WindowModes::ToString(settings.GetWindowMode()) << "\n";
