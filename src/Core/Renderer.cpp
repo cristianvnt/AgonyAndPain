@@ -28,21 +28,11 @@ void Renderer::BeginFrame(Window& window)
 
 void Renderer::EndFrame(Window& window)
 {
-	double currentTime = glfwGetTime();
-	double frameDuration = currentTime - _lastFrameTime;
-
-	// frame limit
-	if (frameDuration < _targetFrameTime)
-	{
-		std::this_thread::sleep_for(std::chrono::duration<double>(_targetFrameTime - frameDuration));
-		currentTime = glfwGetTime();
-		frameDuration = currentTime - _lastFrameTime;
-	}
-
-	_deltaTime = frameDuration;
-	_lastFrameTime = currentTime;
-
 	window.SwapBuffers();
+
+	double currentTime = glfwGetTime();
+	_deltaTime = currentTime - _lastFrameTime;
+	_lastFrameTime = currentTime;
 }
 
 double Renderer::DeltaTime() const

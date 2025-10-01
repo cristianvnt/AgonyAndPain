@@ -14,6 +14,11 @@ Window::~Window()
 {
 	if (_window)
 		glfwDestroyWindow(_window);
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
 	glfwTerminate();
 }
 
@@ -59,7 +64,7 @@ bool Window::Initialize()
 	glfwMakeContextCurrent(_window);
 	glfwSetFramebufferSizeCallback(_window, FramebufferSizeCallback);
 
-	glfwSwapInterval(0);
+	glfwSwapInterval(1);
 
 	if (!gladLoadGLLoader(GLADloadproc(glfwGetProcAddress)))
 	{

@@ -1,9 +1,8 @@
 #include "Game.h"
 
-#include <GLFW/glfw3.h>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include <iostream>
+
+#include "glm/gtc/matrix_transform.hpp"
 
 #include "VertexBufferLayout.h"
 #include "Utils/Utils.h"
@@ -126,6 +125,14 @@ void Game::Initialize()
 
 	_shader->SetUniform1i("u_Texture", 0);
 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+	ImGui_ImplGlfw_InitForOpenGL(_window.GetGLFWwindow(), true);
+	ImGui_ImplOpenGL3_Init();
+
 	_isRunning = true;
 	std::cout << "YIPPEEEEEEEE\n";
 }
@@ -168,11 +175,23 @@ void Game::Run()
 {
 	while (_isRunning && !_window.ShouldClose())
 	{
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
 		ProcessInput();
 		Update(_renderer.DeltaTime());
 
 		_renderer.BeginFrame(_window);
 		Render();
+		{
+			ImGui::Begin("BLABLABLA");
+			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			ImGui::End();
+
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		}
 		_renderer.EndFrame(_window);
 	}
 }

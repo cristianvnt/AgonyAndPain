@@ -1,6 +1,7 @@
 /libs/glfw*
 /libs/glm*
 /libs/third_party*
+/libs/imgui*
 
 /out
 /build
