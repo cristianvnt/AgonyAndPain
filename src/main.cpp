@@ -1,7 +1,8 @@
-#include "Core/Game.h"
+#include "Game/Game.h"
+#include "Utils/Paths.h"
 
 int main()
 {
-	Game game{ "config/settings.ini" };
+	Game game(Path::Settings::CONFIG);
 	game.Run();
 }

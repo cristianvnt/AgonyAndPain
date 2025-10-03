@@ -1,22 +1,14 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <string>
-
-#include "Managers/GameManager.h"
-#include "Renderer.h"
-#include "Shader.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "VertexArray.h"
-#include "Texture.h"
+#include "Rendering/Renderer.h"
+#include "Rendering/Textures/Texture.h"
 
 class Game
 {
 private:
-	GameManager _gameManager;
-	Renderer _renderer;
 	Window _window;
+	Renderer _renderer;
 	bool _isRunning;
 
 	// temporary
@@ -34,7 +26,7 @@ private:
 	void Render();
 
 public:
-	Game(const std::string& filePath);
+	Game(const std::string_view& filePath);
 	void Run();
 };
 

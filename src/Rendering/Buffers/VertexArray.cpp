@@ -1,7 +1,5 @@
 #include "VertexArray.h"
 
-#include "VertexBufferLayout.h"
-
 VertexArray::VertexArray()
 {
 	GL_CHECK(glGenVertexArrays(1, &_vaoID));
@@ -12,7 +10,7 @@ VertexArray::~VertexArray()
 	GL_CHECK(glDeleteVertexArrays(1, &_vaoID));
 }
 
-void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout)
+void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout) const
 {
 	Bind();
 	vb.Bind();

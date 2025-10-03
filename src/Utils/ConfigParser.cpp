@@ -1,18 +1,15 @@
-#include "ConfigManager.h"
+#include "ConfigParser.h"
 
-#include <iostream>
-#include <string>
-
-ConfigManager::ConfigManager(const std::string& file) : _currentSection{ "GLOBAL" }
+ConfigParser::ConfigParser(const std::string_view& file) : _currentSection{ "GLOBAL" }
 {
 	Load(file);
 }
 
-void ConfigManager::Load(const std::string& file)
+void ConfigParser::Load(const std::string_view& file)
 {
 	std::cout << "HMMMMM DEBUG: Loading config from: " << file << "\n";
 
-	std::ifstream data{ file };
+	std::ifstream data{ std::string(file) };
 
 	if (!data.is_open())
 	{
@@ -54,10 +51,10 @@ void ConfigManager::Load(const std::string& file)
 	}
 }
 
-std::string ConfigManager::GetString(const std::string& section, const std::string& key)
+std::string ConfigParser::GetString(const std::string_view& section, const std::string_view& key)
 {
-	if (auto it = _configData.find(section); it != _configData.end())
-		if (auto innerIt = it->second.find(key); innerIt != it->second.end())
+	if (auto it = _configData.find(std::string(section)); it != _configData.end())
+		if (auto innerIt = it->second.find(std::string(key)); innerIt != it->second.end())
 			return innerIt->second;
 
 	return "";

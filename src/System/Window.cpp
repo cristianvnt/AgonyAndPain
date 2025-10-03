@@ -4,10 +4,9 @@
 
 #include "Utils/Logger.h"
 
-Window::Window(int width, int height, const std::string& title, WindowModes::Type wMode)
-	: _window{ nullptr }, _width{ width }, _height{ height }, _title{ title }, _windowMode{ wMode }
+Window::Window(const std::string_view& configPath)
+	: _window{ nullptr }, _windowSettings{ WindowSettings::FromConfig(configPath) }
 {
-
 }
 
 Window::~Window()
@@ -40,7 +39,7 @@ bool Window::Initialize()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	GLFWmonitor* monitor = nullptr;
-	switch (_windowMode)
+	switch (_windowSettings.windowMode)
 	{
 	case WindowModes::Type::FULLSCREEN:
 		monitor = glfwGetPrimaryMonitor();
@@ -53,7 +52,7 @@ bool Window::Initialize()
 		break;
 	}
 
-	_window = glfwCreateWindow(_width, _height, _title.c_str(), monitor, nullptr);
+	_window = glfwCreateWindow(_windowSettings.width, _windowSettings.height, _windowSettings.title.c_str(), monitor, nullptr);
 	if (!_window)
 	{
 		std::cout << "NOOOOO ERROR: GLFW window failed.\n";
@@ -64,15 +63,11 @@ bool Window::Initialize()
 	glfwMakeContextCurrent(_window);
 	glfwSetFramebufferSizeCallback(_window, FramebufferSizeCallback);
 
-	glfwSwapInterval(1);
-
 	if (!gladLoadGLLoader(GLADloadproc(glfwGetProcAddress)))
 	{
 		std::cout << "NOOOOO ERROR: GLAD failed to init.\n";
 		return false;
 	}
-
-	GL_CHECK(glEnable(GL_DEPTH_TEST));
 	
 	return true;
 }
@@ -91,10 +86,3 @@ bool Window::ShouldClose() const
 {
 	return glfwWindowShouldClose(_window);
 }
-
-void Window::Clear(float r, float g, float b, float a)
-{
-	GL_CHECK(glClearColor(r, g, b, a));
-	GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-}
-

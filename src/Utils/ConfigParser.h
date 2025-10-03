@@ -1,5 +1,5 @@
-#ifndef CONFIG_MANAGER_H
-#define CONFIG_MANAGER_H
+#ifndef CONFIG_PARSER_H
+#define CONFIG_PARSER_H
 
 #include <fstream>
 #include <unordered_map>
@@ -7,24 +7,24 @@
 #include <string>
 #include <iostream>
 
-class ConfigManager
+class ConfigParser
 {
 private:
 	std::string _currentSection;
 	std::unordered_map<std::string, std::unordered_map<std::string, std::string>> _configData;
 
-	void Load(const std::string& file);
+	void Load(const std::string_view& file);
 
-	std::string GetString(const std::string& section, const std::string& key);
+	std::string GetString(const std::string_view& section, const std::string_view& key);
 public:
-	ConfigManager(const std::string& file);
+	ConfigParser(const std::string_view& file);
 
 	template <typename T>
-	T GetValue(const std::string& section, const std::string& key, T defaultVal = T{});
+	T GetValue(const std::string_view& section, const std::string_view& key, T defaultVal = T{});
 };
 
 template <typename T>
-T ConfigManager::GetValue(const std::string& section, const std::string& key, T defaultVal)
+T ConfigParser::GetValue(const std::string_view& section, const std::string_view& key, T defaultVal)
 {
 	std::string value = GetString(section, key);
 	if (value.empty())

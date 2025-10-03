@@ -3,39 +3,34 @@
 #include <mmsystem.h>
 
 #include "Game.h"
+#include "Utils/Paths.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 
-#include "VertexBufferLayout.h"
-#include "Utils/Utils.h"
-
-Game::Game(const std::string& filePath)
-	: _gameManager(filePath),
-	_window{ _gameManager.GetSettings().GetWidth(),
-			_gameManager.GetSettings().GetHeight(),
-			_gameManager.GetSettings().GetTitle(),
-			_gameManager.GetSettings().GetWindowMode() },
-	_renderer(_gameManager.GetSettings().GetTargetFPS()),
-	_isRunning(false)
+Game::Game(const std::string_view& filePath)
+	: _window{ filePath }, _renderer{ filePath }, _isRunning{ false }
 {
 	Initialize();
 }
 
 void Game::Initialize()
 {
-	const auto& settings = _gameManager.GetSettings();
+	const RendererSettings& rendererSettings = _renderer.GetSettings();
+	const WindowSettings& windowSettings = _window.GetSettings();
 
 	std::cout << "Initializing game...\n";
-	std::cout << "Title: " << settings.GetTitle() << "\n";
-	std::cout << "Resolution: " << settings.GetWidth() << "x" << settings.GetHeight() << "\n";
-	std::cout << "Target FPS: " << settings.GetTargetFPS() << "\n";
-	std::cout << "Window Mode: " << WindowModes::ToString(settings.GetWindowMode()) << "\n";
+	std::cout << "Title: " << windowSettings.title << "\n";
+	std::cout << "Resolution: " << windowSettings.width << "x" << windowSettings.height << "\n";
+	std::cout << "Target FPS: " << rendererSettings.targetFPS << "\n";
+	std::cout << "Window Mode: " << WindowModes::ToString(windowSettings.windowMode) << "\n";
 
 	if (!_window.Initialize())
 	{
 		std::cout << "NOOOOO ERROR: Failed to init window\n";
 		return;
 	}
+
+	_renderer.Initialize();
 	
 	// temporary init
 	float vertices[] =
@@ -114,7 +109,7 @@ void Game::Initialize()
 
 	_ibo = std::make_unique<IndexBuffer>(indices, 6 * 6);
 
-	glm::mat4 proj = glm::perspective(glm::radians(60.f), (float)_window.GetWidth() / (float)_window.GetHeight(), 0.1f, 100.f);
+	glm::mat4 proj = glm::perspective(glm::radians(60.f), (float)windowSettings.width / (float)windowSettings.height, 0.1f, 100.f);
 	glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -5.f));
 	//glm::mat4 model = glm::rotate(glm::mat4(1.f), glm::radians(-50.f), glm::vec3(1.f, 1.f, 0.f));
 
@@ -123,7 +118,7 @@ void Game::Initialize()
 	_shader = std::make_unique<Shader>(Path::Shader::VERTEX, Path::Shader::FRAGMENT);
 	_shader->Bind();
 
-	_texture = std::make_unique<Texture>(Path::Texture::TEXTURE1);
+	_texture = std::make_unique<Texture>(Path::Texture::CONTAINER);
 	_texture->Bind();
 
 	_shader->SetUniform1i("u_Texture", 0);
@@ -188,14 +183,15 @@ void Game::Run()
 
 		_renderer.BeginFrame(_window);
 		Render();
-		{
-			ImGui::Begin("BLABLABLA");
-			ImGui::Text("Application average %.3lf ms/frame (%d FPS)", 1000.0 / _renderer.GetFPS(), _renderer.GetFPS());
-			ImGui::End();
 
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		}
+		// imgui
+		ImGui::Begin("BLABLABLA");
+		ImGui::Text("Application average %.3lf ms/frame (%d FPS)", 1000.0 / _renderer.GetFPS(), _renderer.GetFPS());
+		ImGui::End();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 		_renderer.EndFrame(_window);
 	}
 	timeEndPeriod(1);
