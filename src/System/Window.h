@@ -17,7 +17,7 @@ private:
 	WindowSettings _windowSettings;
 
 public:
-	Window(const std::string_view& configPath);
+	Window(const WindowSettings& settings);	
 	~Window();
 
 	Window(const Window&) = delete;

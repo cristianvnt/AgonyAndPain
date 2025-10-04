@@ -6,16 +6,14 @@
 struct RendererSettings
 {
 	int targetFPS;
-	bool vSync;
+	int vSync;
 
-	static RendererSettings FromConfig(const std::string_view& configPath)
+	static RendererSettings FromParser(ConfigParser& parser)
 	{
-		ConfigParser parse(configPath);
-		
 		return RendererSettings
 		{
-			.targetFPS = parse.GetValue<int>("GAME", "TARGET_FPS", 60),
-			.vSync = parse.GetValue<bool>("GAME", "VSYNC", false)
+			.targetFPS = parser.GetValue<int>("GAME", "TARGET_FPS", 60),
+			.vSync = parser.GetValue<int>("GAME", "VSYNC", 0)
 		};
 	}
 };

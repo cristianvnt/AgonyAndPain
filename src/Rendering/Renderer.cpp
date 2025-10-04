@@ -3,8 +3,8 @@
 
 #include <thread>
 
-Renderer::Renderer(const std::string_view& configPath)
-	: _rendererSettings{ RendererSettings::FromConfig(configPath) },
+Renderer::Renderer(const RendererSettings& settings)
+	: _rendererSettings{ settings },
 	_targetFrameTime{ 1.0 / _rendererSettings.targetFPS },
 	_lastFrameTime{ std::chrono::high_resolution_clock::now() }
 {
@@ -14,9 +14,12 @@ void Renderer::Initialize()
 {
 	GL_CHECK(glfwSwapInterval(_rendererSettings.vSync));
 	GL_CHECK(glEnable(GL_DEPTH_TEST));
+
+	GL_CHECK(glEnable(GL_BLEND));
+	GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 }
 
-void Renderer::BeginFrame(Window& window)
+void Renderer::BeginFrame(Window* window)
 {
 	Clear(0.2f, 0.3f, 0.3f, 1.0f);
 }
@@ -35,9 +38,9 @@ void Renderer::Draw(const VertexArray& vao, const IndexBuffer& ibo, const Shader
 	GL_CHECK(glDrawElements(GL_TRIANGLES, ibo.GetCount(), GL_UNSIGNED_INT, nullptr));
 }
 
-void Renderer::EndFrame(Window& window)
+void Renderer::EndFrame(Window* window)
 {
-	window.SwapBuffers();
+	window->SwapBuffers();
 
 	CapFPS();
 	_frameTimer.Update();

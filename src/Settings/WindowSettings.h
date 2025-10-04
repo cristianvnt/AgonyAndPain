@@ -47,17 +47,15 @@ struct WindowSettings
 	int height;
 	WindowModes::Type windowMode;
 
-	static WindowSettings FromConfig(const std::string_view& configPath)
+	static WindowSettings FromParser(ConfigParser& parser)
 	{
-		ConfigParser parse(configPath);
-
 		return WindowSettings
 		{
-			.title = parse.GetValue<std::string>("GAME", "TITLE", "Agony and Pain"),
-			.width = parse.GetValue<int>("GAME", "SCREEN_WIDTH", 800),
-			.height = parse.GetValue<int>("GAME", "SCREEN_HEIGHT", 600),
+			.title = parser.GetValue<std::string>("GAME", "TITLE", "Agony and Pain"),
+			.width = parser.GetValue<int>("GAME", "SCREEN_WIDTH", 800),
+			.height = parser.GetValue<int>("GAME", "SCREEN_HEIGHT", 600),
 			.windowMode = WindowModes::FromString(
-				parse.GetValue<std::string>("GAME", "WINDOW_MODE", "windowed")
+				parser.GetValue<std::string>("GAME", "WINDOW_MODE", "windowed")
 			)
 		};
 	}

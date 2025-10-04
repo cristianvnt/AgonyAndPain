@@ -4,8 +4,8 @@
 
 #include "Utils/Logger.h"
 
-Window::Window(const std::string_view& configPath)
-	: _window{ nullptr }, _windowSettings{ WindowSettings::FromConfig(configPath) }
+Window::Window(const WindowSettings& settings)
+	: _window{ nullptr }, _windowSettings{ settings }
 {
 }
 

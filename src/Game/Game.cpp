@@ -7,30 +7,67 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
-Game::Game(const std::string_view& filePath)
-	: _window{ filePath }, _renderer{ filePath }, _isRunning{ false }
+Game::Game(const std::string_view& configPath)
+	: _isRunning{ false },
+	_vao{ nullptr }, _vbo{ nullptr }, _ibo{ nullptr },
+	_shader{ nullptr }, _texture{ nullptr }
 {
+	GameSettings settings = GameSettings::FromConfig(configPath);
+	_window = new (std::nothrow) Window{ settings.window };
+	_renderer = new (std::nothrow) Renderer{ settings.renderer };
+	_camera = new (std::nothrow) Camera{ settings.camera };
+
+	if (!_window || !_renderer || !_camera)
+	{
+		delete _renderer;
+		delete _camera;
+		delete _window;
+		return;
+	}
+
 	Initialize();
+}
+
+Game::~Game()
+{
+	delete _texture;
+	delete _shader;
+	delete _ibo;
+	delete _vbo;
+	delete _vao;
+
+	delete _window;
+	delete _renderer;
+	delete _camera;
 }
 
 void Game::Initialize()
 {
-	const RendererSettings& rendererSettings = _renderer.GetSettings();
-	const WindowSettings& windowSettings = _window.GetSettings();
-
 	std::cout << "Initializing game...\n";
-	std::cout << "Title: " << windowSettings.title << "\n";
-	std::cout << "Resolution: " << windowSettings.width << "x" << windowSettings.height << "\n";
-	std::cout << "Target FPS: " << rendererSettings.targetFPS << "\n";
-	std::cout << "Window Mode: " << WindowModes::ToString(windowSettings.windowMode) << "\n";
+	std::cout << "Title: " << _window->GetSettings().title << "\n";
+	std::cout << "Resolution: " << _window->GetSettings().width << "x" << _window->GetSettings().height << "\n";
+	std::cout << "Target FPS: " << _renderer->GetSettings().targetFPS << "\n";
+	std::cout << "Window Mode: " << WindowModes::ToString(_window->GetSettings().windowMode) << "\n";
 
-	if (!_window.Initialize())
+	if (!_window->Initialize())
 	{
 		std::cout << "NOOOOO ERROR: Failed to init window\n";
 		return;
 	}
 
-	_renderer.Initialize();
+	// imgui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+	ImGui_ImplGlfw_InitForOpenGL(_window->GetGLFWwindow(), true);
+	ImGui_ImplOpenGL3_Init();
+
+	_renderer->Initialize();
+
+	_mouseSensitivity = _camera->GetSettings().sensitivity;
+	_moveSpeed = _camera->GetSettings().speed;
 	
 	// temporary init
 	float vertices[] =
@@ -84,52 +121,51 @@ void Game::Initialize()
 
 	_cubePositions =
 	{
-		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(2.0f, 5.0f, -15.0f),
+		glm::vec3(0.0f,  0.0f,  -1.0f),
+		glm::vec3(2.0f,  5.0f, -15.0f),
 		glm::vec3(-1.5f, -2.2f, -2.5f),
 		glm::vec3(-3.8f, -2.0f, -12.3f),
 		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f, 3.0f, -7.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
 		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f, 2.0f, -2.5f),
-		glm::vec3(1.5f, 0.2f, -1.5f),
-		glm::vec3(-1.3f, 1.0f, -1.5f)
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
 
-	GL_CHECK(glEnable(GL_BLEND));
-	GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-
-	_vao = std::make_unique<VertexArray>();
-	_vbo = std::make_unique<VertexBuffer>(vertices, 24 * 5 * sizeof(float));
+	_vao = new VertexArray{};
+	_vbo = new VertexBuffer{ vertices, 24 * 5 * sizeof(float) };
 
 	VertexBufferLayout layout;
 	layout.Push<float>(3);
 	layout.Push<float>(2);
 	_vao->AddBuffer(*_vbo, layout);
 
-	_ibo = std::make_unique<IndexBuffer>(indices, 6 * 6);
+	_ibo = new IndexBuffer{ indices, 6 * 6 };
 
-	glm::mat4 proj = glm::perspective(glm::radians(60.f), (float)windowSettings.width / (float)windowSettings.height, 0.1f, 100.f);
-	glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -5.f));
-	//glm::mat4 model = glm::rotate(glm::mat4(1.f), glm::radians(-50.f), glm::vec3(1.f, 1.f, 0.f));
-
-	_mvp = proj * view;
-
-	_shader = std::make_unique<Shader>(Path::Shader::VERTEX, Path::Shader::FRAGMENT);
+	_shader = new Shader{ Path::Shader::VERTEX, Path::Shader::FRAGMENT };
 	_shader->Bind();
 
-	_texture = std::make_unique<Texture>(Path::Texture::CONTAINER);
+	_texture = new Texture{ Path::Texture::CONTAINER };
 	_texture->Bind();
 
 	_shader->SetUniform1i("u_Texture", 0);
 
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	glfwSetWindowUserPointer(_window->GetGLFWwindow(), this);
 
-	ImGui_ImplGlfw_InitForOpenGL(_window.GetGLFWwindow(), true);
-	ImGui_ImplOpenGL3_Init();
+	glfwSetCursorPosCallback(_window->GetGLFWwindow(), [](GLFWwindow* window, double x, double y)
+		{
+			Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
+			if (game && glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
+				game->HandleMouseMove(x, y);
+		});
+
+	glfwSetScrollCallback(_window->GetGLFWwindow(), [](GLFWwindow* window, double x, double y)
+		{
+			Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
+			if (game)
+				game->HandleScroll(x, y);
+		});
 
 	_isRunning = true;
 	std::cout << "YIPPEEEEEEEE\n";
@@ -137,16 +173,38 @@ void Game::Initialize()
 
 void Game::ProcessInput()
 {
-	_window.PollEvents();
+	_window->PollEvents();
 
-	if (glfwGetKey(_window.GetGLFWwindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		_isRunning = false;
 
-	if (glfwGetKey(_window.GetGLFWwindow(), GLFW_KEY_X) == GLFW_PRESS)
+	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_X) == GLFW_PRESS)
 		GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
 
-	if (glfwGetKey(_window.GetGLFWwindow(), GLFW_KEY_Z) == GLFW_PRESS)
+	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_Z) == GLFW_PRESS)
 		GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
+
+	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
+		glfwSetInputMode(_window->GetGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		glfwSetInputMode(_window->GetGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+	glm::vec3 movement(0.f);
+	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_W) == GLFW_PRESS)
+		movement.z += 1.f;
+	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_S) == GLFW_PRESS)
+		movement.z -= 1.f;
+	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_A) == GLFW_PRESS)
+		movement.x -= 1.f;
+	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_D) == GLFW_PRESS)
+		movement.x += 1.f;
+
+	if (glm::length(movement) > 0.f)
+	{
+		movement = glm::normalize(movement) * _moveSpeed * static_cast<float>(_renderer->DeltaTime());
+		_camera->Move(movement);
+	}
 }
 
 void Game::Update(double deltaTime)
@@ -156,43 +214,69 @@ void Game::Update(double deltaTime)
 
 void Game::Render()
 {
+	float aspectRatio = (float)_window->GetSettings().width / (float)_window->GetSettings().height;
+	glm::mat4 proj = _camera->GetProjMatrix(aspectRatio);
+	glm::mat4 view = _camera->GetViewMatrix();
+
 	_shader->Bind();
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < _cubePositions.size(); i++)
 	{
-		float randomGreen = (glm::sin(static_cast<float>(glfwGetTime()))) + 0.3f * i;
 		glm::mat4 model = glm::translate(glm::mat4(1.f), _cubePositions[i]);
 		float angle = 20.f * i;
 		model = glm::rotate(model, glm::radians(angle), _cubePositions[i]);
+
+		float randomGreen = (glm::sin(static_cast<float>(glfwGetTime()))) + 0.3f * i;
 		_shader->SetUniformVec4("someColor", glm::vec4{ 0.8f, 0.5f, randomGreen, 1.f });
-		_shader->SetUniformMat4f("u_Proj", _mvp * model);
-		_renderer.Draw(*_vao, *_ibo, *_shader);
+		_shader->SetUniformMat4f("u_Proj", proj * view * model);
+		_renderer->Draw(*_vao, *_ibo, *_shader);
 	}
 }
 
 void Game::Run()
 {
 	timeBeginPeriod(1);
-	while (_isRunning && !_window.ShouldClose())
+	while (_isRunning && !_window->ShouldClose())
 	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
 		ProcessInput();
-		Update(_renderer.DeltaTime());
+		Update(_renderer->DeltaTime());
 
-		_renderer.BeginFrame(_window);
+		_renderer->BeginFrame(_window);
 		Render();
 
 		// imgui
 		ImGui::Begin("BLABLABLA");
-		ImGui::Text("Application average %.3lf ms/frame (%d FPS)", 1000.0 / _renderer.GetFPS(), _renderer.GetFPS());
+		ImGui::Text("Application average %.3lf ms/frame (%d FPS)", 1000.0 / _renderer->GetFPS(), _renderer->GetFPS());
 		ImGui::End();
-
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		_renderer.EndFrame(_window);
+		_renderer->EndFrame(_window);
 	}
 	timeEndPeriod(1);
+}
+
+void Game::HandleMouseMove(double x, double y)
+{
+	static double lastX = x, lastY = y;
+	double xOffset = x - lastX;
+	double yOffset = lastY - y;
+	lastX = x;
+	lastY = y;
+
+	glm::vec2 rotation
+	{
+		xOffset * _mouseSensitivity,
+		yOffset * _mouseSensitivity
+	};
+
+	_camera->Rotate(rotation);
+}
+
+void Game::HandleScroll(double x, double y)
+{
+	_camera->Zoom(static_cast<float>(y));
 }
