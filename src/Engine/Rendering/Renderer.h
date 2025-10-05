@@ -1,13 +1,13 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "Utils/FrameTimer.h"
-#include "Settings/RendererSettings.h"
-#include "System/Window.h"
+#include "Engine/Utils/FrameTimer.h"
+#include "Engine/Settings/RendererSettings.h"
+#include "Engine/System/Window.h"
 
-#include "Rendering/Buffers/VertexArray.h"
-#include "Rendering/Buffers/IndexBuffer.h"
-#include "Rendering/Shaders/Shader.h"
+#include "Engine/Rendering/Buffers/VertexArray.h"
+#include "Engine/Rendering/Buffers/IndexBuffer.h"
+#include "Engine/Rendering/Shaders/Shader.h"
 
 class Renderer
 {

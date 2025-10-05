@@ -1,7 +1,7 @@
 #ifndef CAMERA_SETTINGS_H
 #define CAMERA_SETTINGS_H
 
-#include "Utils/ConfigParser.h"
+#include "Engine/Utils/ConfigParser.h"
 
 struct CameraSettings
 {

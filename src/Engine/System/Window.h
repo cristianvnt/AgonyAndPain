@@ -8,7 +8,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-#include "Settings/WindowSettings.h"
+#include "Engine/Settings/WindowSettings.h"
 
 class Window
 {

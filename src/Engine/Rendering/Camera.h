@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Settings/CameraSettings.h"
+#include "Engine/Settings/CameraSettings.h"
 
 class Camera
 {
@@ -32,6 +32,8 @@ public:
 	void Move(const glm::vec3& movement);
 	void Rotate(const glm::vec2& rotation);
 	void Zoom(float offset);
+
+	void SetPosition(const glm::vec3& pos) { _position = pos; }
 
 private:
 	void UpdateVectors();

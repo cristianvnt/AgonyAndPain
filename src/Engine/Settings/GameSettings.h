@@ -1,7 +1,7 @@
 #ifndef GAME_SETTINGS_H
 #define GAME_SETTINGS_H
 
-#include "Utils/ConfigParser.h"
+#include "Engine/Utils/ConfigParser.h"
 #include "WindowSettings.h"
 #include "RendererSettings.h"
 #include "CameraSettings.h"

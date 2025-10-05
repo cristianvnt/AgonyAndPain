@@ -1,10 +1,11 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "Rendering/Renderer.h"
-#include "Rendering/Textures/Texture.h"
-#include "Settings/GameSettings.h"
-#include "Rendering/Camera.h"
+#include "Engine/Rendering/Renderer.h"
+#include "Engine/Rendering/Textures/Texture.h"
+#include "Engine/Settings/GameSettings.h"
+#include "Engine/Rendering/Camera.h"
+#include "Entities/Player.h"
 
 class Game
 {
@@ -12,6 +13,7 @@ private:
 	Window* _window;
 	Renderer* _renderer;
 	Camera* _camera;
+	Player* _player;
 	bool _isRunning;
 
 	float _mouseSensitivity{};

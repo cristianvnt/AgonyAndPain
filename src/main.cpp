@@ -1,5 +1,5 @@
 #include "Game/Game.h"
-#include "Utils/Paths.h"
+#include "Engine/Utils/Paths.h"
 
 int main()
 {

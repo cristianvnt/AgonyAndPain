@@ -20,14 +20,9 @@ glm::mat4 Camera::GetProjMatrix(float aspectRatio) const
 
 void Camera::Move(const glm::vec3& movement)
 {
-	std::cout << "Moving - Front: (" << _front.x << ", " << _front.y << ", " << _front.z << ")\n";
-	std::cout << "Movement input: (" << movement.x << ", " << movement.y << ", " << movement.z << ")\n";
-
 	_position += _right * movement.x;
 	_position += _up * movement.y;
 	_position += _front * movement.z;
-
-	std::cout << "New position: (" << _position.x << ", " << _position.y << ", " << _position.z << ")\n";
 }
 
 void Camera::Rotate(const glm::vec2& rotation)

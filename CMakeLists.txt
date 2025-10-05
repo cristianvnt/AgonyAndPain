@@ -9,13 +9,6 @@ include(FetchContent)
 file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/libs)
 file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/libs/third_party)
 
-# dependencies
-# GLAD validation
-if(NOT EXISTS ${CMAKE_SOURCE_DIR}/libs/glad/src/glad.c)
-    message(WARNING "GLAD not found. Download from https://glad.dav1d.de (API: Core, Profile: Core, Version: 4.6)")
-    message(FATAL_ERROR "GLAD required in libs/glad/")
-endif()
-
 # GLFW
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)

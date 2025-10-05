@@ -1,8 +1,9 @@
 #include "VertexBuffer.h"
 
-#include "Utils/Logger.h"
+#include "Engine/Utils/Logger.h"
 
-VertexBuffer::VertexBuffer(const void* data, size_t size)
+VertexBuffer::VertexBuffer(const void* data, unsigned int size)
+	: _size{ size }
 {
 	GL_CHECK(glGenBuffers(1, &_vboID));
 	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, _vboID));

@@ -3,12 +3,12 @@
 #include <mmsystem.h>
 
 #include "Game.h"
-#include "Utils/Paths.h"
+#include "Engine/Utils/Paths.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 
 Game::Game(const std::string_view& configPath)
-	: _isRunning{ false },
+	: _isRunning{ false }, _player{ nullptr },
 	_vao{ nullptr }, _vbo{ nullptr }, _ibo{ nullptr },
 	_shader{ nullptr }, _texture{ nullptr }
 {
@@ -35,6 +35,7 @@ Game::~Game()
 	delete _ibo;
 	delete _vbo;
 	delete _vao;
+	delete _player;
 
 	delete _window;
 	delete _renderer;
@@ -55,22 +56,13 @@ void Game::Initialize()
 		return;
 	}
 
-	// imgui
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-
-	ImGui_ImplGlfw_InitForOpenGL(_window->GetGLFWwindow(), true);
-	ImGui_ImplOpenGL3_Init();
-
 	_renderer->Initialize();
 
 	_mouseSensitivity = _camera->GetSettings().sensitivity;
 	_moveSpeed = _camera->GetSettings().speed;
 	
 	// temporary init
-	float vertices[] =
+	std::vector<float> vertices =
 	{
 		 // pos				 //tex
 		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // 0
@@ -109,7 +101,7 @@ void Game::Initialize()
 		 -0.5f,  0.5f,  0.5f, 0.0f, 1.0f  // 23
 	};
 
-	unsigned int indices[] =
+	std::vector<unsigned int> indices =
 	{
 		0, 1, 2, 2, 3, 0, // back
 		4, 5, 6, 6, 7, 4, // front
@@ -134,25 +126,31 @@ void Game::Initialize()
 	};
 
 	_vao = new VertexArray{};
-	_vbo = new VertexBuffer{ vertices, 24 * 5 * sizeof(float) };
+	_vbo = new VertexBuffer{ vertices.data(), 24 * 5 * sizeof(float)};
 
 	VertexBufferLayout layout;
 	layout.Push<float>(3);
 	layout.Push<float>(2);
 	_vao->AddBuffer(*_vbo, layout);
 
-	_ibo = new IndexBuffer{ indices, 6 * 6 };
+	_ibo = new IndexBuffer{ indices.data(), 6 * 6};
 
 	_shader = new Shader{ Path::Shader::VERTEX, Path::Shader::FRAGMENT };
 	_shader->Bind();
 
 	_texture = new Texture{ Path::Texture::CONTAINER };
 	_texture->Bind();
-
 	_shader->SetUniform1i("u_Texture", 0);
 
-	glfwSetWindowUserPointer(_window->GetGLFWwindow(), this);
+	_player = new Player{
+		BodyBuilder()
+			.SetGeometry(vertices, indices, layout)
+			.SetShader(Path::Shader::VERTEX_PLAYER, Path::Shader::FRAGMENT_PLAYER)
+			.SetTexture(Path::Texture::FACE)
+			.Build()
+	};
 
+	glfwSetWindowUserPointer(_window->GetGLFWwindow(), this);
 	glfwSetCursorPosCallback(_window->GetGLFWwindow(), [](GLFWwindow* window, double x, double y)
 		{
 			Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
@@ -166,6 +164,15 @@ void Game::Initialize()
 			if (game)
 				game->HandleScroll(x, y);
 		});
+
+	// imgui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+	ImGui_ImplGlfw_InitForOpenGL(_window->GetGLFWwindow(), true);
+	ImGui_ImplOpenGL3_Init();
 
 	_isRunning = true;
 	std::cout << "YIPPEEEEEEEE\n";
@@ -219,6 +226,7 @@ void Game::Render()
 	glm::mat4 view = _camera->GetViewMatrix();
 
 	_shader->Bind();
+	_texture->Bind();
 	for (int i = 0; i < _cubePositions.size(); i++)
 	{
 		glm::mat4 model = glm::translate(glm::mat4(1.f), _cubePositions[i]);
@@ -227,9 +235,13 @@ void Game::Render()
 
 		float randomGreen = (glm::sin(static_cast<float>(glfwGetTime()))) + 0.3f * i;
 		_shader->SetUniformVec4("someColor", glm::vec4{ 0.8f, 0.5f, randomGreen, 1.f });
-		_shader->SetUniformMat4f("u_Proj", proj * view * model);
+		_shader->SetUniformMat4f("u_Proj", proj);
+		_shader->SetUniformMat4f("u_View", view);
+		_shader->SetUniformMat4f("u_Model", model);
 		_renderer->Draw(*_vao, *_ibo, *_shader);
 	}
+
+	_player->Render(*_renderer, view, proj);
 }
 
 void Game::Run()

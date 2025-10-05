@@ -5,13 +5,16 @@ class VertexBuffer
 {
 private:
 	unsigned int _vboID;
+	unsigned int _size;
 
 public:
-	VertexBuffer(const void* data, size_t size);
+	VertexBuffer(const void* data, unsigned int size);
 	~VertexBuffer();
 
 	void Bind() const;
 	void Unbind() const;
+
+	unsigned int GetSize() const { return _size; }
 };
 
 #endif

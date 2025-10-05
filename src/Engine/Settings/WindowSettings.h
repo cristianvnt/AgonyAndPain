@@ -1,7 +1,7 @@
 #ifndef WINDOW_SETTINGS_H
 #define WINDOW_SETTINGS_H
 
-#include "Utils/ConfigParser.h"
+#include "Engine/Utils/ConfigParser.h"
 
 namespace WindowModes
 {
