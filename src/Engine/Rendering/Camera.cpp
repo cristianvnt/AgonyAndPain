@@ -47,6 +47,16 @@ void Camera::Zoom(float offset)
 		_fov = 60.f;
 }
 
+void Camera::LookAt(const glm::vec3& target)
+{
+	_front = glm::normalize(target - _position);
+	_right = glm::normalize(glm::cross(_front, _worldUp));
+	_up = glm::normalize(glm::cross(_right, _front));
+
+	_pitch = glm::degrees(glm::asin(_front.y));
+	_yaw = glm::degrees(glm::atan(_front.x, _front.z));
+}
+
 void Camera::UpdateVectors()
 {
 	glm::vec3 front{};

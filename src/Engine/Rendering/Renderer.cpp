@@ -21,12 +21,12 @@ void Renderer::Initialize()
 
 void Renderer::BeginFrame(Window* window)
 {
-	Clear(0.2f, 0.3f, 0.3f, 1.0f);
+	Clear({ 0.2f, 0.3f, 0.3f, 1.0f });
 }
 
-void Renderer::Clear(float r, float g, float b, float a) const
+void Renderer::Clear(const glm::vec4& color) const
 {
-	GL_CHECK(glClearColor(r, g, b, a));
+	GL_CHECK(glClearColor(color.r, color.g, color.b, color.a));
 	GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
 

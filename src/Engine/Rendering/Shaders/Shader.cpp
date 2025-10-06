@@ -9,7 +9,6 @@ Shader::Shader(std::string_view vertexPath, std::string_view fragmentPath)
 	: _shaderProgramID(0)
 {
 	ShaderProgramSource source = ParseShader(vertexPath, fragmentPath);
-	std::cout << source.vertexSource << '\n' << source.fragmentSource << "\n";
 	_shaderProgramID = CreateShaderProgram(source.vertexSource, source.fragmentSource);
 }
 

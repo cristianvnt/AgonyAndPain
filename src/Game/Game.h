@@ -15,6 +15,7 @@ private:
 	Camera* _camera;
 	Player* _player;
 	bool _isRunning;
+	bool _isFirstPerson;
 
 	float _mouseSensitivity{};
 	float _moveSpeed{};

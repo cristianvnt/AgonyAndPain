@@ -32,8 +32,11 @@ public:
 	void Move(const glm::vec3& movement);
 	void Rotate(const glm::vec2& rotation);
 	void Zoom(float offset);
+	void LookAt(const glm::vec3& target);
 
+	const glm::vec3& GetPosition() const { return _position; }
 	void SetPosition(const glm::vec3& pos) { _position = pos; }
+	const glm::vec3& GetFront() const { return _front; }
 
 private:
 	void UpdateVectors();

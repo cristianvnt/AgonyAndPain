@@ -24,7 +24,7 @@ public:
 
 	void Initialize();
 	void BeginFrame(Window* window);
-	void Clear(float r, float g, float b, float a) const;
+	void Clear(const glm::vec4& color) const;
 	void Draw(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const;
 	void EndFrame(Window* window);
 

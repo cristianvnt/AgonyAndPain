@@ -8,7 +8,22 @@ Player::Player(Body* body)
 
 Player::~Player()
 {
+	delete _movement;
 	delete _body;
+}
+
+void Player::ProcessInput(Window* window)
+{
+	glm::vec3 velocity{};
+	if (glfwGetKey(window->GetGLFWwindow(), GLFW_KEY_W) == GLFW_PRESS)
+		velocity.z -= 1.f;
+	if (glfwGetKey(window->GetGLFWwindow(), GLFW_KEY_S) == GLFW_PRESS)
+		velocity.z += 1.f;
+	if (glfwGetKey(window->GetGLFWwindow(), GLFW_KEY_A) == GLFW_PRESS)
+		velocity.x -= 1.f;
+	if (glfwGetKey(window->GetGLFWwindow(), GLFW_KEY_D) == GLFW_PRESS)
+		velocity.x += 1.f;
+	SetVelocity(velocity);
 }
 
 void Player::Update(float deltaTime)
@@ -21,7 +36,7 @@ void Player::Render(Renderer& renderer, const glm::mat4& view, const glm::mat4& 
 	_body->GetShader()->Bind();
 	_body->GetTexture()->Bind();
 
-	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 3.0f));
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), GetPosition());
 
 	_body->GetShader()->SetUniformVec4("someColor", glm::vec4{1.f, 0.5f, 0.f, 1.f});
 	_body->GetShader()->SetUniformMat4f("u_Model", model);
