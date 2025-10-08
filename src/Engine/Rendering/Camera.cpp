@@ -3,7 +3,8 @@
 Camera::Camera(const CameraSettings& settings)
 	: _cameraSettings{ settings },
 	_position{ settings.position }, _worldUp{ settings.up },
-	_yaw{ settings.yaw }, _pitch{ settings.pitch }, _fov{ settings.fov }
+	_yaw{ settings.yaw }, _pitch{ settings.pitch }, _fov{ settings.fov },
+	_thirdPersonOffset{ settings.thirdPersonOffset }
 {
 	UpdateVectors();
 }
@@ -47,14 +48,10 @@ void Camera::Zoom(float offset)
 		_fov = 60.f;
 }
 
-void Camera::LookAt(const glm::vec3& target)
+void Camera::FollowTarget(const glm::vec3& target, float rotationY)
 {
-	_front = glm::normalize(target - _position);
-	_right = glm::normalize(glm::cross(_front, _worldUp));
-	_up = glm::normalize(glm::cross(_right, _front));
-
-	_pitch = glm::degrees(glm::asin(_front.y));
-	_yaw = glm::degrees(glm::atan(_front.x, _front.z));
+	glm::vec4 rotatedOffset = glm::rotate(glm::mat4(1.f), glm::radians(rotationY), glm::vec3{ 0.f, 1.f, 0.f }) * glm::vec4(_thirdPersonOffset, 1.f);
+	SetPosition(target + glm::vec3(rotatedOffset));
 }
 
 void Camera::UpdateVectors()

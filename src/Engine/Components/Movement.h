@@ -14,9 +14,9 @@ public:
 
 	void Update(float deltaTime);
 	
-	const glm::vec3 GetVelocity() const { return _velocity; }
+	const glm::vec3& GetVelocity() const { return _velocity; }
 	void SetVelocity(const glm::vec3& velocity) { _velocity = velocity; }
-	const glm::vec3 GetPosition() const { return _position; }
+	const glm::vec3& GetPosition() const { return _position; }
 	void SetPosition(const glm::vec3& pos) { _position = pos; }
 };
 

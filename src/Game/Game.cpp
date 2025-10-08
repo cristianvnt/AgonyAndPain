@@ -10,7 +10,7 @@
 Game::Game(const std::string_view& configPath)
 	: _isRunning{ false }, _player{ nullptr },
 	_vao{ nullptr }, _vbo{ nullptr }, _ibo{ nullptr },
-	_shader{ nullptr }, _texture{ nullptr }, _isFirstPerson{ false }
+	_shader{ nullptr }, _texture{ nullptr }
 {
 	GameSettings settings = GameSettings::FromConfig(configPath);
 	_window = new (std::nothrow) Window{ settings.window };
@@ -181,7 +181,7 @@ void Game::Initialize()
 void Game::ProcessInput()
 {
 	_window->PollEvents();
-	_player->ProcessInput(_window);
+	_player->ProcessInput(_window, _camera);
 
 	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		_isRunning = false;
@@ -197,43 +197,13 @@ void Game::ProcessInput()
 
 	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		glfwSetInputMode(_window->GetGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
-	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_Q) == GLFW_PRESS)
-		_isFirstPerson = true;
-
-	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_E) == GLFW_PRESS)
-		_isFirstPerson = false;
-
-	/*glm::vec3 movement(0.f);
-	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_W) == GLFW_PRESS)
-		movement.z += 1.f;
-	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_S) == GLFW_PRESS)
-		movement.z -= 1.f;
-	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_A) == GLFW_PRESS)
-		movement.x -= 1.f;
-	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_D) == GLFW_PRESS)
-		movement.x += 1.f;
-
-	if (glm::length(movement) > 0.f)
-	{
-		movement = glm::normalize(movement) * _moveSpeed * static_cast<float>(_renderer->DeltaTime());
-		_camera->Move(movement);
-	}*/
 }
 
 void Game::Update(double deltaTime)
 {
 	_player->Update(static_cast<float>(deltaTime));
 
-	if (_isFirstPerson)
-	{
-		_camera->SetPosition(_player->GetPosition());
-	}
-	else
-	{
-		_camera->SetPosition(_player->GetPosition() + glm::vec3(0.f, 2.f, 5.f));
-		_camera->LookAt(_player->GetPosition());
-	}
+	_camera->FollowTarget(_player->GetPosition(), _player->GetRotationY());
 }
 
 void Game::Render()
@@ -303,6 +273,7 @@ void Game::HandleMouseMove(double x, double y)
 	};
 
 	_camera->Rotate(rotation);
+	_player->Rotate(-rotation.x);
 }
 
 void Game::HandleScroll(double x, double y)

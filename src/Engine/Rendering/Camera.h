@@ -21,6 +21,8 @@ private:
 	float _yaw;
 	float _pitch;
 	float _fov;
+
+	glm::vec3 _thirdPersonOffset;
 public:
 	Camera(const CameraSettings& settings);
 
@@ -32,11 +34,13 @@ public:
 	void Move(const glm::vec3& movement);
 	void Rotate(const glm::vec2& rotation);
 	void Zoom(float offset);
-	void LookAt(const glm::vec3& target);
+	void FollowTarget(const glm::vec3& target, const glm::vec2& rotation);
+	void FollowTarget(const glm::vec3& target, float rotationY);
 
 	const glm::vec3& GetPosition() const { return _position; }
 	void SetPosition(const glm::vec3& pos) { _position = pos; }
 	const glm::vec3& GetFront() const { return _front; }
+	const glm::vec3& GetRight() const { return _right; }
 
 private:
 	void UpdateVectors();
