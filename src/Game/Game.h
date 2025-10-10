@@ -16,6 +16,8 @@ private:
 	Player* _player;
 	bool _isRunning;
 
+	bool _cursorJustDisabled{};
+
 	float _mouseSensitivity{};
 
 	// temporary

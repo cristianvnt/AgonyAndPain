@@ -192,10 +192,16 @@ void Game::ProcessInput()
 		GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
 
 	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
+	{
+		_cursorJustDisabled = true;
 		glfwSetInputMode(_window->GetGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
 
 	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+	{
+		_cursorJustDisabled = false;
 		glfwSetInputMode(_window->GetGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
 }
 
 void Game::Update(double deltaTime)
@@ -260,6 +266,14 @@ void Game::Run()
 void Game::HandleMouseMove(double x, double y)
 {
 	static double lastX = x, lastY = y;
+	if (_cursorJustDisabled)
+	{
+		lastX = x;
+		lastY = y;
+		_cursorJustDisabled = false;
+		return;
+	}
+
 	double xOffset = x - lastX;
 	double yOffset = lastY - y;
 	lastX = x;
