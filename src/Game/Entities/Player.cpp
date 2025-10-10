@@ -3,9 +3,10 @@
 
 Player::Player(Body* body)
 	: _body{ body }, _movement{ new Movement{ glm::vec3{0.f} } },
-	_position{ GetPosition() }, _up{ glm::vec3{0.f, 1.f, 0.f} },
+	_up{ glm::vec3{0.f, 1.f, 0.f} },
 	_worldUp{ _up }, _front{ glm::vec3{0.f, 0.f, -1.f} }, _right{ glm::vec3{1.f, 0.f, 0.f} },
-	_yaw{ -90.f }, _pitch{ 0.f }
+	_yaw{ -90.f }, _pitch{ 0.f },
+	_speed{ 1.f }
 {
 	UpdateVectors();
 }
@@ -20,20 +21,20 @@ void Player::ProcessInput(const Window* window)
 {
 	glm::vec3 velocity{};
 	if (glfwGetKey(window->GetGLFWwindow(), GLFW_KEY_W) == GLFW_PRESS)
-		velocity += _front * 1.f;
+		velocity += _front;
 	if (glfwGetKey(window->GetGLFWwindow(), GLFW_KEY_S) == GLFW_PRESS)
-		velocity -= _front * 1.f;
+		velocity -= _front;
 	if (glfwGetKey(window->GetGLFWwindow(), GLFW_KEY_A) == GLFW_PRESS)
-		velocity -= _right * 1.f;
+		velocity -= _right;
 	if (glfwGetKey(window->GetGLFWwindow(), GLFW_KEY_D) == GLFW_PRESS)
-		velocity += _right * 1.f;
-	if (velocity != glm::vec3{ 0.f })
-		velocity = glm::normalize(velocity);
+		velocity += _right;
 
+	if (velocity != glm::vec3{ 0.f })
+		velocity = glm::normalize(velocity) * _speed;
 	SetVelocity(velocity);
 }
 
-void Player::Update(float deltaTime)
+void Player::Update(double deltaTime)
 {
 	_movement->Update(deltaTime);
 }
@@ -62,6 +63,11 @@ void Player::Rotate(float yawOffset, float pitchOffset)
 	_pitch = glm::clamp(_pitch, -89.f, 89.f);
 
 	UpdateVectors();
+}
+
+void Player::SetSpeed(float speed)
+{
+	_speed = speed;
 }
 
 void Player::UpdateVectors()

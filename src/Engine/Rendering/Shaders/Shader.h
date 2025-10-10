@@ -7,6 +7,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <filesystem>
 
 struct ShaderProgramSource
 {
@@ -19,6 +20,16 @@ class Shader
 private:
 	unsigned int _shaderProgramID;
 	std::unordered_map<std::string, int> _uniformLocationCache;
+	std::string _vertexPath;
+	std::string _fragmentPath;
+	std::filesystem::file_time_type _vertexTimeStamp;
+	std::filesystem::file_time_type _fragmentTimeStamp;
+
+	// reload timer
+	float _timeSinceLastCheck;
+
+	void Reload();
+	bool NeedsReload() const;
 
 	ShaderProgramSource ParseShader(std::string_view vertexPath, std::string_view fragmentPath);
 	unsigned int CompileShader(unsigned int type, const std::string& source);
@@ -28,6 +39,8 @@ public:
 	Shader() : _shaderProgramID(0) {}
 	Shader(std::string_view vertexPath, std::string_view fragmentPath);
 	~Shader();
+
+	void ReloadChanges(float deltaTime);
 
 	void Bind() const;
 	void Unbind() const;

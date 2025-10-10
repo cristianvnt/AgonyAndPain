@@ -5,21 +5,21 @@ namespace Path
 {
 	namespace Settings
 	{
-		constexpr std::string_view CONFIG = "config/settings.ini";
+		constexpr std::string_view CONFIG = "C:/Users/Cristi/Desktop/AgonyAndPain/config/settings.ini";
 	}
 
 	namespace Shader
 	{
-		constexpr std::string_view VERTEX = "resources/shaders/shader.vert";
-		constexpr std::string_view FRAGMENT = "resources/shaders/shader.frag";
-		constexpr std::string_view VERTEX_PLAYER = "resources/shaders/player.vert";
-		constexpr std::string_view FRAGMENT_PLAYER = "resources/shaders/player.frag";
+		constexpr std::string_view VERTEX = "C:/Users/Cristi/Desktop/AgonyAndPain/resources/shaders/shader.vert";
+		constexpr std::string_view FRAGMENT = "C:/Users/Cristi/Desktop/AgonyAndPain/resources/shaders/shader.frag";
+		constexpr std::string_view VERTEX_PLAYER = "C:/Users/Cristi/Desktop/AgonyAndPain/resources/shaders/player.vert";
+		constexpr std::string_view FRAGMENT_PLAYER = "C:/Users/Cristi/Desktop/AgonyAndPain/resources/shaders/player.frag";
 	}
 
 	namespace Texture
 	{
-		constexpr std::string_view FACE = "resources/assets/face.png";
-		constexpr std::string_view CONTAINER = "resources/assets/container.jpg";
+		constexpr std::string_view FACE = "C:/Users/Cristi/Desktop/AgonyAndPain/resources/assets/face.png";
+		constexpr std::string_view CONTAINER = "C:/Users/Cristi/Desktop/AgonyAndPain/resources/assets/container.jpg";
 	}
 }
 

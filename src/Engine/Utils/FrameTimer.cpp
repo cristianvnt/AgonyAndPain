@@ -3,18 +3,18 @@
 #include "GLFW/glfw3.h"
 
 FrameTimer::FrameTimer()
-	: _deltaTime{ 0.0 },
+	: _deltaTime{ 0.f },
 	_lastFrameTime{ std::chrono::high_resolution_clock::now() },
 	_fpsCounter{ 0 },
 	_lastFPSTime{ std::chrono::high_resolution_clock::now() },
-	_currentFPS{ 0.0 }
+	_currentFPS{ 0.f }
 {
 }
 
 void FrameTimer::Update()
 {
 	auto now = std::chrono::high_resolution_clock::now();
-	_deltaTime = std::chrono::duration<double>(now - _lastFrameTime).count();
+	_deltaTime = std::chrono::duration<float>(now - _lastFrameTime).count();
 	_lastFrameTime = now;
 }
 
@@ -26,10 +26,10 @@ double FrameTimer::GetDeltaTime() const
 void FrameTimer::UpdateFPS()
 {
 	auto now = std::chrono::high_resolution_clock::now();
-	double elapsed = std::chrono::duration<double>(now - _lastFPSTime).count();
+	float elapsed = std::chrono::duration<float>(now - _lastFPSTime).count();
 
 	_fpsCounter++;
-	if (elapsed >= 0.2)
+	if (elapsed >= 0.2f)
 	{
 		_currentFPS = _fpsCounter / elapsed;
 		_fpsCounter = 0;

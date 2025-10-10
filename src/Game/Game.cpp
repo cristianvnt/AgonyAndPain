@@ -148,6 +148,7 @@ void Game::Initialize()
 			.SetTexture(Path::Texture::FACE)
 			.Build()
 	};
+	_player->SetSpeed(5.f);
 
 	glfwSetWindowUserPointer(_window->GetGLFWwindow(), this);
 	glfwSetCursorPosCallback(_window->GetGLFWwindow(), [](GLFWwindow* window, double x, double y)
@@ -206,6 +207,8 @@ void Game::ProcessInput()
 
 void Game::Update(double deltaTime)
 {
+	_shader->ReloadChanges(static_cast<float>(_renderer->DeltaTime()));
+
 	_player->Update(static_cast<float>(deltaTime));
 
 	_camera->FollowTarget(_player->GetPosition(), _player->GetFront(), _player->GetUp());

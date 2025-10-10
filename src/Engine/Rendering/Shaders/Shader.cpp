@@ -6,15 +6,55 @@
 #include "glm/gtc/type_ptr.hpp"
 
 Shader::Shader(std::string_view vertexPath, std::string_view fragmentPath)
-	: _shaderProgramID(0)
+	: _shaderProgramID(0), _vertexPath{ vertexPath }, _fragmentPath{ fragmentPath },
+	_timeSinceLastCheck(0.f)
 {
 	ShaderProgramSource source = ParseShader(vertexPath, fragmentPath);
 	_shaderProgramID = CreateShaderProgram(source.vertexSource, source.fragmentSource);
+
+	_vertexTimeStamp = std::filesystem::last_write_time(_vertexPath);
+	_fragmentTimeStamp = std::filesystem::last_write_time(_fragmentPath);
 }
 
 Shader::~Shader()
 {
 	GL_CHECK(glDeleteProgram(_shaderProgramID));
+}
+
+void Shader::Reload()
+{
+	ShaderProgramSource source = ParseShader(_vertexPath, _fragmentPath);
+	unsigned int newProgram = CreateShaderProgram(source.vertexSource, source.fragmentSource);
+
+	if (!newProgram)
+		return;
+
+	glDeleteProgram(_shaderProgramID);
+	_shaderProgramID = newProgram;
+	_uniformLocationCache.clear();
+	std::cout << "Shader reloaded: " << _vertexPath << " / " << _fragmentPath << "\n";
+}
+
+bool Shader::NeedsReload() const
+{
+	return std::filesystem::last_write_time(_vertexPath) != _vertexTimeStamp ||
+		std::filesystem::last_write_time(_fragmentPath) != _fragmentTimeStamp;
+}
+
+void Shader::ReloadChanges(float deltaTime)
+{
+	_timeSinceLastCheck += deltaTime;
+	if (_timeSinceLastCheck < 1.f)
+		return;
+
+	if (NeedsReload())
+	{
+		Reload();
+		_vertexTimeStamp = std::filesystem::last_write_time(_vertexPath);
+		_fragmentTimeStamp = std::filesystem::last_write_time(_fragmentPath);
+		std::cout << "[HOT RELOAD] Reloaded " << _vertexPath << " and " << _fragmentPath << "\n";
+	}
+	_timeSinceLastCheck = 0.f;
 }
 
 ShaderProgramSource Shader::ParseShader(std::string_view vertexPath, std::string_view fragmentPath)
@@ -27,28 +67,28 @@ ShaderProgramSource Shader::ParseShader(std::string_view vertexPath, std::string
 	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
-	try
+	vShaderFile.open(std::string(vertexPath));
+	fShaderFile.open(std::string(fragmentPath));
+
+	if (!vShaderFile.is_open() || !fShaderFile.is_open())
 	{
-		vShaderFile.open(std::string(vertexPath));
-		fShaderFile.open(std::string(fragmentPath));
-		std::stringstream vShaderStream;
-		std::stringstream fShaderStream;
-
-		// read shader content from files
-		vShaderStream << vShaderFile.rdbuf();
-		fShaderStream << fShaderFile.rdbuf();
-
-		vShaderFile.close();
-		fShaderFile.close();
-
-		// convert stream into string
-		vertCode = vShaderStream.str();
-		fragCode = fShaderStream.str();
+		std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ\n";
+		return ShaderProgramSource{ "", "" };
 	}
-	catch (std::ifstream::failure& err)
-	{
-		std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: " << err.what() << "\n";
-	}
+
+	std::stringstream vShaderStream;
+	std::stringstream fShaderStream;
+
+	// read shader content from files
+	vShaderStream << vShaderFile.rdbuf();
+	fShaderStream << fShaderFile.rdbuf();
+
+	vShaderFile.close();
+	fShaderFile.close();
+
+	// convert stream into string
+	vertCode = vShaderStream.str();
+	fragCode = fShaderStream.str();
 
 	return ShaderProgramSource{ vertCode, fragCode };
 }
