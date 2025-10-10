@@ -12,23 +12,34 @@ private:
 	Body* _body;
 	Movement* _movement;
 
-	float _rotationY;
+	glm::vec3 _position;
+	glm::vec3 _front;
+	glm::vec3 _up;
+	glm::vec3 _right;
+	glm::vec3 _worldUp;
+
+	float _yaw;
+	float _pitch;
 
 public:
 	Player(Body* body);
 	~Player();
 
-	void ProcessInput(const Window* window, const Camera* camera);
+	void ProcessInput(const Window* window);
 	void Update(float deltaTime);
 	void Render(Renderer& renderer, const glm::mat4& view, const glm::mat4& proj);
 	
-	void Rotate(float yaw);
+	void Rotate(float yawOffset, float pitchOffset);
 
 	const glm::vec3 GetPosition() { return _movement->GetPosition(); }
 	void SetPosition(const glm::vec3& pos) { _movement->SetPosition(pos); }
 	const glm::vec3 GetVelocity() const { return _movement->GetVelocity(); }
 	void SetVelocity(const glm::vec3& velocity) { _movement->SetVelocity(velocity); }
-	float GetRotationY() const { return _rotationY; }
+	const glm::vec3& GetFront() const { return _front; }
+	const glm::vec3& GetUp() const { return _up; }
+
+private:
+	void UpdateVectors();
 };
 
 #endif

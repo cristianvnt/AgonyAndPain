@@ -17,7 +17,6 @@ private:
 	bool _isRunning;
 
 	float _mouseSensitivity{};
-	float _moveSpeed{};
 
 	// temporary
 	VertexArray* _vao;

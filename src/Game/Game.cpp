@@ -59,7 +59,6 @@ void Game::Initialize()
 	_renderer->Initialize();
 
 	_mouseSensitivity = _camera->GetSettings().sensitivity;
-	_moveSpeed = _camera->GetSettings().speed;
 	
 	// temporary init
 	std::vector<float> vertices =
@@ -181,7 +180,7 @@ void Game::Initialize()
 void Game::ProcessInput()
 {
 	_window->PollEvents();
-	_player->ProcessInput(_window, _camera);
+	_player->ProcessInput(_window);
 
 	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		_isRunning = false;
@@ -203,7 +202,7 @@ void Game::Update(double deltaTime)
 {
 	_player->Update(static_cast<float>(deltaTime));
 
-	_camera->FollowTarget(_player->GetPosition(), _player->GetRotationY());
+	_camera->FollowTarget(_player->GetPosition(), _player->GetFront(), _player->GetUp());
 }
 
 void Game::Render()
@@ -266,14 +265,7 @@ void Game::HandleMouseMove(double x, double y)
 	lastX = x;
 	lastY = y;
 
-	glm::vec2 rotation
-	{
-		xOffset * _mouseSensitivity,
-		yOffset * _mouseSensitivity
-	};
-
-	_camera->Rotate(rotation);
-	_player->Rotate(-rotation.x);
+	_player->Rotate(xOffset * _mouseSensitivity, yOffset * _mouseSensitivity);
 }
 
 void Game::HandleScroll(double x, double y)

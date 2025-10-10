@@ -2,11 +2,10 @@
 
 Camera::Camera(const CameraSettings& settings)
 	: _cameraSettings{ settings },
-	_position{ settings.position }, _worldUp{ settings.up },
-	_yaw{ settings.yaw }, _pitch{ settings.pitch }, _fov{ settings.fov },
-	_thirdPersonOffset{ settings.thirdPersonOffset }
+	_position{ settings.position }, _fov{ settings.fov },
+	_thirdPersonOffset{ settings.thirdPersonOffset },
+	_up{ settings.up }, _front{ glm::vec3{0.f, 0.f, -1.f} }
 {
-	UpdateVectors();
 }
 
 glm::mat4 Camera::GetViewMatrix() const
@@ -19,50 +18,22 @@ glm::mat4 Camera::GetProjMatrix(float aspectRatio) const
 	return glm::perspective(glm::radians(_fov), aspectRatio, 0.1f, 100.f);
 }
 
-void Camera::Move(const glm::vec3& movement)
-{
-	_position += _right * movement.x;
-	_position += _up * movement.y;
-	_position += _front * movement.z;
-}
-
-void Camera::Rotate(const glm::vec2& rotation)
-{
-	_yaw += rotation.x;
-	_pitch += rotation.y;
-
-	if (_pitch > 89.f)
-		_pitch = 89.f;
-	if (_pitch < -89.f)
-		_pitch = -89.f;
-
-	UpdateVectors();
-}
-
 void Camera::Zoom(float offset)
 {
 	_fov -= offset;
-	if (_fov < 1.0)
-		_fov = 1.0;
-	if (_fov > 60.f)
-		_fov = 60.f;
+	_fov = glm::clamp(_fov, 1.f, 60.f);
 }
 
-void Camera::FollowTarget(const glm::vec3& target, float rotationY)
+void Camera::FollowTarget(const glm::vec3& playerPos, const glm::vec3& playerFront, const glm::vec3& playerUp)
 {
-	glm::vec4 rotatedOffset = glm::rotate(glm::mat4(1.f), glm::radians(rotationY), glm::vec3{ 0.f, 1.f, 0.f }) * glm::vec4(_thirdPersonOffset, 1.f);
-	SetPosition(target + glm::vec3(rotatedOffset));
-}
+	glm::vec3 forward = glm::normalize(playerFront);
+	glm::vec3 right = glm::normalize(glm::cross(forward, playerUp));
+	glm::vec3 up = glm::cross(right, forward);
 
-void Camera::UpdateVectors()
-{
-	glm::vec3 front{};
-	front.x = glm::cos(glm::radians(_yaw)) * glm::cos(glm::radians(_pitch));
-	front.y = glm::sin(glm::radians(_pitch));
-	front.z = glm::sin(glm::radians(_yaw)) * glm::cos(glm::radians(_pitch));
-	
-	_front = glm::normalize(front);
-	_right = glm::normalize(glm::cross(_front, _worldUp));
-	_up = glm::normalize(glm::cross(_right, _front));
-	
+	glm::mat3 rotation(right, up, -forward);
+	glm::vec3 rotatedOffset = rotation * _thirdPersonOffset;
+
+	_position = playerPos + rotatedOffset;
+	_front = glm::normalize(playerPos - _position);
+	_up = up;
 }

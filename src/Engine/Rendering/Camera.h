@@ -15,11 +15,6 @@ private:
 	glm::vec3 _position;
 	glm::vec3 _front;
 	glm::vec3 _up;
-	glm::vec3 _right;
-	glm::vec3 _worldUp;
-
-	float _yaw;
-	float _pitch;
 	float _fov;
 
 	glm::vec3 _thirdPersonOffset;
@@ -31,19 +26,14 @@ public:
 	glm::mat4 GetViewMatrix() const;
 	glm::mat4 GetProjMatrix(float aspectRatio) const;
 
-	void Move(const glm::vec3& movement);
-	void Rotate(const glm::vec2& rotation);
 	void Zoom(float offset);
-	void FollowTarget(const glm::vec3& target, const glm::vec2& rotation);
-	void FollowTarget(const glm::vec3& target, float rotationY);
+
+	void FollowTarget(const glm::vec3& playerPos, const glm::vec3& playerFront, const glm::vec3& playerUp);
 
 	const glm::vec3& GetPosition() const { return _position; }
 	void SetPosition(const glm::vec3& pos) { _position = pos; }
 	const glm::vec3& GetFront() const { return _front; }
-	const glm::vec3& GetRight() const { return _right; }
-
-private:
-	void UpdateVectors();
+	const glm::vec3& GetUp() const { return _up; }
 };
 
 #endif
