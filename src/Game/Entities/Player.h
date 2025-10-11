@@ -38,6 +38,7 @@ public:
 	void SetSpeed(float speed);
 	const glm::vec3& GetFront() const { return _front; }
 	const glm::vec3& GetUp() const { return _up; }
+	Shader* GetShader() const { return _body->GetShader(); }
 
 private:
 	void UpdateVectors();

@@ -208,6 +208,7 @@ void Game::ProcessInput()
 void Game::Update(double deltaTime)
 {
 	_shader->ReloadChanges(static_cast<float>(_renderer->DeltaTime()));
+	_player->GetShader()->ReloadChanges(static_cast<float>(_renderer->DeltaTime()));
 
 	_player->Update(static_cast<float>(deltaTime));
 
