@@ -5,7 +5,7 @@ namespace Path
 {
 	namespace Settings
 	{
-		constexpr std::string_view CONFIG = "C:/Users/Cristi/Desktop/AgonyAndPain/config/settings.ini";
+		constexpr std::string_view CONFIG = "C:/Users/Cristi/Desktop/AgonyAndPain/config/settings.conf";
 	}
 
 	namespace Shader
