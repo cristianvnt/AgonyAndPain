@@ -20,17 +20,17 @@ Player::~Player()
 	delete _body;
 }
 
-void Player::ProcessInput(const Window* window)
+void Player::ProcessInput(InputState& input)
 {
-	_movement->SetVelocity(glm::vec3{ 0.f });
-	glm::vec3 velocity{};
-	if (glfwGetKey(window->GetGLFWwindow(), GLFW_KEY_W) == GLFW_PRESS)
+	glm::vec3 velocity{0.f};
+	_movement->SetVelocity(velocity);
+	if (input.moveForward)
 		velocity += _front;
-	if (glfwGetKey(window->GetGLFWwindow(), GLFW_KEY_S) == GLFW_PRESS)
+	if (input.moveBackward)
 		velocity -= _front;
-	if (glfwGetKey(window->GetGLFWwindow(), GLFW_KEY_A) == GLFW_PRESS)
+	if (input.moveLeft)
 		velocity -= _right;
-	if (glfwGetKey(window->GetGLFWwindow(), GLFW_KEY_D) == GLFW_PRESS)
+	if (input.moveRight)
 		velocity += _right;
 
 	if (velocity == glm::vec3{ 0.f })

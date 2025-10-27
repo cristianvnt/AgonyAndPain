@@ -13,6 +13,7 @@ private:
 	Renderer* _renderer{};
 	Camera* _camera{};
 	Player* _player{};
+	InputState _input{};
 	bool _isRunning{};
 
 	bool _cursorJustDisabled{};

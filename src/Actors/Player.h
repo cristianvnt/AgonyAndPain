@@ -5,6 +5,22 @@
 #include "Components/Movement.h"
 #include "Game/Window.h"
 
+struct InputState
+{
+	bool moveForward = false;
+	bool moveBackward = false;
+	bool moveLeft = false;
+	bool moveRight = false;
+
+	void ResetStates()
+	{
+		moveForward = false;
+		moveBackward = false;
+		moveLeft = false;
+		moveRight = false;
+	}
+};
+
 class Player
 {
 private:
@@ -25,7 +41,7 @@ public:
 	Player(Body* body, Movement* movement);
 	~Player();
 
-	void ProcessInput(const Window* window);
+	void ProcessInput(InputState& input);
 	void Update(double deltaTime);
 	void Render(const glm::mat4& view, const glm::mat4& proj);
 	

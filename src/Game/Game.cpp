@@ -182,7 +182,17 @@ void Game::Initialize()
 void Game::ProcessInput()
 {
 	_window->PollEvents();
-	_player->ProcessInput(_window);
+	
+	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_W) == GLFW_PRESS)
+		_input.moveForward = true;
+	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_S) == GLFW_PRESS)
+		_input.moveBackward = true;
+	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_A) == GLFW_PRESS)
+		_input.moveLeft = true;
+	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_D) == GLFW_PRESS)
+		_input.moveRight = true;
+	_player->ProcessInput(_input);
+	_input.ResetStates();
 
 	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		_isRunning = false;
