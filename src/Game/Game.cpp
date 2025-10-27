@@ -12,7 +12,7 @@ using namespace Settings;
 
 Game::Game() : _isRunning{ false },
 	_window{ nullptr }, _renderer{ nullptr },
-	_camera{ nullptr }, _player{ nullptr }, _cube{ nullptr }
+	_camera{ nullptr }, _player{ nullptr }
 {
 	_window = new (std::nothrow) Window;
 	_renderer = new (std::nothrow) Renderer;
@@ -31,10 +31,9 @@ Game::Game() : _isRunning{ false },
 
 Game::~Game()
 {
-	/*for (Cube* cube : _cubes)
-		delete cube;*/
+	for (Cube* cube : _cubes)
+		delete cube;
 
-	delete _cube;
 	delete _player;
 
 	delete _window;
@@ -72,15 +71,6 @@ void Game::Initialize()
 		cube->SetAngle(20.f * i);
 		_cubes.emplace_back(cube);
 	}
-
-	_cube = new Cube(
-		BodyBuilder()
-		.SetGeometry(GetVertices(), GetIndices(), GetLayout())
-		.SetShader(Path::Shader::VERTEX, Path::Shader::FRAGMENT)
-		.SetTexture(Path::Texture::CONTAINER)
-		.Build(),
-		new Movement(GetPositions()[0])
-	);
 
 	_player = new Player{
 		BodyBuilder()

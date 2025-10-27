@@ -14,7 +14,6 @@ private:
 	Renderer* _renderer{};
 	Camera* _camera{};
 	Player* _player{};
-	Cube* _cube{};
 	std::vector<Cube*> _cubes{};
 
 	InputState _input{};
