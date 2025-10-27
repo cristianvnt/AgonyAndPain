@@ -41,21 +41,12 @@ void Player::ProcessInput(InputState& input)
 void Player::Update(double deltaTime)
 {
 	_movement->Update(static_cast<float>(deltaTime));
+	UpdateRenderData();
 }
 
-void Player::Render(const glm::mat4& view, const glm::mat4& proj)
+RenderData& Player::GetRenderData()
 {
-	_body->GetShader()->Bind();
-	_body->GetTexture()->Bind();
-
-	glm::mat4 model = glm::translate(glm::mat4(1.0f), _movement->GetPosition());
-	model = glm::rotate(model, glm::radians(-_yaw), glm::vec3{ 0.f, 1.f, 0.f });
-	model = glm::rotate(model, glm::radians(_pitch), glm::vec3{ 0.f, 0.f, 1.f });
-
-	_body->GetShader()->SetUniformVec4("someColor", glm::vec4{1.f, 0.5f, 0.f, 1.f});
-	_body->GetShader()->SetUniformMat4f("u_Model", model);
-	_body->GetShader()->SetUniformMat4f("u_View", view);
-	_body->GetShader()->SetUniformMat4f("u_Proj", proj);
+	return _renderData;
 }
 
 void Player::Rotate(float yawOffset, float pitchOffset)
@@ -65,6 +56,18 @@ void Player::Rotate(float yawOffset, float pitchOffset)
 	_pitch = glm::clamp(_pitch, -89.f, 89.f);
 
 	UpdateVectors();
+}
+
+void Player::UpdateRenderData()
+{
+	glm::mat4 m = glm::translate(glm::mat4(1.0f), _movement->GetPosition());
+	m = glm::rotate(m, glm::radians(-_yaw), glm::vec3{ 0.f, 1.f, 0.f });
+	m = glm::rotate(m, glm::radians(_pitch), glm::vec3{ 0.f, 0.f, 1.f });
+	_renderData.model = m;
+	_renderData.vao = _body->GetVAO();
+	_renderData.ibo = _body->GetIBO();
+	_renderData.shader = _body->GetShader();
+	_renderData.texture = _body->GetTexture();
 }
 
 void Player::UpdateVectors()

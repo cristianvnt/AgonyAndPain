@@ -3,6 +3,7 @@
 
 #include "Components/Body.h"
 #include "Components/Movement.h"
+#include "Components/RenderData.h"
 #include "Game/Window.h"
 
 struct InputState
@@ -26,6 +27,7 @@ class Player
 private:
 	Body* _body{};
 	Movement* _movement{};
+	RenderData _renderData{};
 	float _speed{};
 
 	glm::vec3 _front{};
@@ -36,6 +38,7 @@ private:
 	float _yaw{};
 	float _pitch{};
 
+	void UpdateRenderData();
 	void UpdateVectors();
 public:
 	Player(Body* body, Movement* movement);
@@ -43,7 +46,7 @@ public:
 
 	void ProcessInput(InputState& input);
 	void Update(double deltaTime);
-	void Render(const glm::mat4& view, const glm::mat4& proj);
+	RenderData& GetRenderData();
 	
 	void Rotate(float yawOffset, float pitchOffset);
 

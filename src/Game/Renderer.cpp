@@ -39,6 +39,38 @@ void Renderer::Draw(const VertexArray& vao, const IndexBuffer& ibo, const Shader
 	GL_CHECK(glDrawElements(GL_TRIANGLES, ibo.GetCount(), GL_UNSIGNED_INT, nullptr));
 }
 
+void Renderer::DrawObject(const RenderData& data, const glm::mat4& view, const glm::mat4& proj) const
+{
+	data.shader->Bind();
+	data.vao->Bind();
+	data.ibo->Bind();
+	data.texture->Bind();
+
+	data.shader->SetUniform1i("u_Texture", 0);
+	data.shader->SetUniformVec4("someColor", glm::vec4{ 0.8f, 0.5f, 1.f, 1.f });
+	data.shader->SetUniformMat4f("u_Model", data.model);
+	data.shader->SetUniformMat4f("u_View", view);
+	data.shader->SetUniformMat4f("u_Proj", proj);
+
+	GL_CHECK(glDrawElements(GL_TRIANGLES, data.ibo->GetCount(), GL_UNSIGNED_INT, nullptr));
+}
+
+void Renderer::DrawObject(const RenderData& data, const glm::vec4 color, const glm::mat4& view, const glm::mat4& proj) const
+{
+	data.shader->Bind();
+	data.vao->Bind();
+	data.ibo->Bind();
+	data.texture->Bind();
+
+	data.shader->SetUniform1i("u_Texture", 0);
+	data.shader->SetUniformVec4("someColor", color);
+	data.shader->SetUniformMat4f("u_Model", data.model);
+	data.shader->SetUniformMat4f("u_View", view);
+	data.shader->SetUniformMat4f("u_Proj", proj);
+
+	GL_CHECK(glDrawElements(GL_TRIANGLES, data.ibo->GetCount(), GL_UNSIGNED_INT, nullptr));
+}
+
 void Renderer::EndFrame()
 {
 	CapFPS();

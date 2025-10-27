@@ -5,6 +5,7 @@
 #include "Components/Textures/Texture.h"
 #include "Actors/Camera.h"
 #include "Actors/Player.h"
+#include "Actors/Cube.h"
 
 class Game
 {
@@ -13,25 +14,20 @@ private:
 	Renderer* _renderer{};
 	Camera* _camera{};
 	Player* _player{};
+	Cube* _cube{};
+	std::vector<Cube*> _cubes{};
+
 	InputState _input{};
+
 	bool _isRunning{};
 
 	bool _cursorJustDisabled{};
 	float _mouseSensitivity{};
 
-	// temporary
-	VertexArray* _vao{};
-	VertexBuffer* _vbo{};
-	IndexBuffer* _ibo{};
-	Shader* _shader{};
-	Texture* _texture{};
-	std::vector<glm::vec3> _cubePositions{};
-
 	void Initialize();
 	void ProcessInput();
 	void Update(double deltaTime);
 	void Render();
-
 public:
 	Game();
 	~Game();

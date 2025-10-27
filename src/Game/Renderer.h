@@ -7,6 +7,7 @@
 #include "Components/Buffers/VertexArray.h"
 #include "Components/Buffers/IndexBuffer.h"
 #include "Components/Shaders/Shader.h"
+#include "Components/RenderData.h"
 
 namespace RendererSettings
 {
@@ -30,6 +31,8 @@ public:
 	void BeginFrame();
 	void Clear(const glm::vec4& color) const;
 	void Draw(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const;
+	void DrawObject(const RenderData& data, const glm::mat4& view, const glm::mat4& proj) const;
+	void DrawObject(const RenderData& data, const glm::vec4 color, const glm::mat4& view, const glm::mat4& proj) const;
 	void EndFrame();
 
 	void CapFPS();

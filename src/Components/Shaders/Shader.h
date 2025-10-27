@@ -36,7 +36,7 @@ private:
 	unsigned int CreateShaderProgram(const std::string& vertexShader, const std::string& fragmentShader);
 
 public:
-	Shader() {}
+	Shader() = default;
 	Shader(std::string_view vertexPath, std::string_view fragmentPath);
 	~Shader();
 
