@@ -1,6 +1,6 @@
 #include "IndexBuffer.h"
 
-#include "Engine/Utils/Logger.h"
+#include "Utils/Logger.h"
 
 IndexBuffer::IndexBuffer(const void* data, unsigned int count)
 	: _count(count)

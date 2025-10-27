@@ -1,5 +1,5 @@
 #include "Texture.h"
-#include "Engine/Utils/Logger.h"
+#include "Utils/Logger.h"
 
 #include "stb_image.h"
 

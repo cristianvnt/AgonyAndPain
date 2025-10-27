@@ -96,4 +96,4 @@ elseif(WIN32)
 endif()
 
 # runtime resources
-file(COPY ${CMAKE_SOURCE_DIR}/resources ${CMAKE_SOURCE_DIR}/config DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

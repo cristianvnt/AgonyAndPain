@@ -1,13 +1,16 @@
 #include "Player.h"
 #include <glm/ext/matrix_transform.hpp>
 
-Player::Player(Body* body)
-	: _body{ body }, _movement{ new Movement{ glm::vec3{0.f} } },
-	_up{ glm::vec3{0.f, 1.f, 0.f} },
-	_worldUp{ _up }, _front{ glm::vec3{0.f, 0.f, -1.f} }, _right{ glm::vec3{1.f, 0.f, 0.f} },
-	_yaw{ -90.f }, _pitch{ 0.f },
-	_speed{ 1.f }
+Player::Player(Body* body, Movement* movement)
+	: _body{ body }, _movement{ movement }, _speed{ 1.f }
 {
+	_up = glm::vec3{ 0.f, 1.f, 0.f };
+	_worldUp = _up;
+	_front = glm::vec3{ 0.f, 0.f, -1.f };
+	_right = glm::vec3{ 1.f, 0.f, 0.f };
+	_yaw = -90.f;
+	_pitch = 0.f;
+
 	UpdateVectors();
 }
 
@@ -19,6 +22,7 @@ Player::~Player()
 
 void Player::ProcessInput(const Window* window)
 {
+	_movement->SetVelocity(glm::vec3{ 0.f });
 	glm::vec3 velocity{};
 	if (glfwGetKey(window->GetGLFWwindow(), GLFW_KEY_W) == GLFW_PRESS)
 		velocity += _front;
@@ -29,22 +33,22 @@ void Player::ProcessInput(const Window* window)
 	if (glfwGetKey(window->GetGLFWwindow(), GLFW_KEY_D) == GLFW_PRESS)
 		velocity += _right;
 
-	if (velocity != glm::vec3{ 0.f })
-		velocity = glm::normalize(velocity) * _speed;
-	SetVelocity(velocity);
+	if (velocity == glm::vec3{ 0.f })
+		return;
+	_movement->SetVelocity(glm::normalize(velocity) * _speed);
 }
 
 void Player::Update(double deltaTime)
 {
-	_movement->Update(deltaTime);
+	_movement->Update(static_cast<float>(deltaTime));
 }
 
-void Player::Render(Renderer& renderer, const glm::mat4& view, const glm::mat4& proj)
+void Player::Render(const glm::mat4& view, const glm::mat4& proj)
 {
 	_body->GetShader()->Bind();
 	_body->GetTexture()->Bind();
 
-	glm::mat4 model = glm::translate(glm::mat4(1.0f), GetPosition());
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), _movement->GetPosition());
 	model = glm::rotate(model, glm::radians(-_yaw), glm::vec3{ 0.f, 1.f, 0.f });
 	model = glm::rotate(model, glm::radians(_pitch), glm::vec3{ 0.f, 0.f, 1.f });
 
@@ -52,8 +56,6 @@ void Player::Render(Renderer& renderer, const glm::mat4& view, const glm::mat4& 
 	_body->GetShader()->SetUniformMat4f("u_Model", model);
 	_body->GetShader()->SetUniformMat4f("u_View", view);
 	_body->GetShader()->SetUniformMat4f("u_Proj", proj);
-
-	renderer.Draw(*_body->GetVAO(), *_body->GetIBO(), *_body->GetShader());
 }
 
 void Player::Rotate(float yawOffset, float pitchOffset)
@@ -63,11 +65,6 @@ void Player::Rotate(float yawOffset, float pitchOffset)
 	_pitch = glm::clamp(_pitch, -89.f, 89.f);
 
 	UpdateVectors();
-}
-
-void Player::SetSpeed(float speed)
-{
-	_speed = speed;
 }
 
 void Player::UpdateVectors()

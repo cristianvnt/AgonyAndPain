@@ -1,21 +1,22 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <mmsystem.h>
+#include <iostream>
 
 #include "Game.h"
-#include "Engine/Utils/Paths.h"
+#include "Utils/Paths.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 
-Game::Game(const std::string_view& configPath)
-	: _isRunning{ false }, _player{ nullptr },
-	_vao{ nullptr }, _vbo{ nullptr }, _ibo{ nullptr },
-	_shader{ nullptr }, _texture{ nullptr }
+using namespace Settings;
+
+Game::Game() : _isRunning{ false },
+	_window{ nullptr }, _renderer{ nullptr },
+	_camera{ nullptr }, _player{ nullptr }
 {
-	GameSettings settings = GameSettings::FromConfig(configPath);
-	_window = new (std::nothrow) Window{ settings.window };
-	_renderer = new (std::nothrow) Renderer{ settings.renderer };
-	_camera = new (std::nothrow) Camera{ settings.camera };
+	_window = new (std::nothrow) Window;
+	_renderer = new (std::nothrow) Renderer;
+	_camera = new (std::nothrow) Camera;
 
 	if (!_window || !_renderer || !_camera)
 	{
@@ -45,10 +46,9 @@ Game::~Game()
 void Game::Initialize()
 {
 	std::cout << "Initializing game...\n";
-	std::cout << "Title: " << _window->GetSettings().title << "\n";
-	std::cout << "Resolution: " << _window->GetSettings().width << "x" << _window->GetSettings().height << "\n";
-	std::cout << "Target FPS: " << _renderer->GetSettings().targetFPS << "\n";
-	std::cout << "Window Mode: " << WindowModes::ToString(_window->GetSettings().windowMode) << "\n";
+	std::cout << "Title: " << TITLE << "\n";
+	std::cout << "Resolution: " << SCREEN_WIDTH << "x" << SCREEN_HEIGHT << "\n";
+	std::cout << "Target FPS: " << RendererSettings::TARGET_FPS << "\n";
 
 	if (!_window->Initialize())
 	{
@@ -58,7 +58,7 @@ void Game::Initialize()
 
 	_renderer->Initialize();
 
-	_mouseSensitivity = _camera->GetSettings().sensitivity;
+	_mouseSensitivity = SENSITIVITY;
 	
 	// temporary init
 	std::vector<float> vertices =
@@ -146,9 +146,10 @@ void Game::Initialize()
 			.SetGeometry(vertices, indices, layout)
 			.SetShader(Path::Shader::VERTEX_PLAYER, Path::Shader::FRAGMENT_PLAYER)
 			.SetTexture(Path::Texture::FACE)
-			.Build()
+			.Build(),
+		new Movement(glm::vec3{1.f, 1.f, 0.f})
 	};
-	_player->SetSpeed(5.f);
+	_player->SetSpeed(10.f);
 
 	glfwSetWindowUserPointer(_window->GetGLFWwindow(), this);
 	glfwSetCursorPosCallback(_window->GetGLFWwindow(), [](GLFWwindow* window, double x, double y)
@@ -208,16 +209,16 @@ void Game::ProcessInput()
 void Game::Update(double deltaTime)
 {
 	_shader->ReloadChanges(static_cast<float>(_renderer->DeltaTime()));
-	_player->GetShader()->ReloadChanges(static_cast<float>(_renderer->DeltaTime()));
+	_player->GetBody()->GetShader()->ReloadChanges(static_cast<float>(_renderer->DeltaTime()));
 
 	_player->Update(static_cast<float>(deltaTime));
 
-	_camera->FollowTarget(_player->GetPosition(), _player->GetFront(), _player->GetUp());
+	_camera->FollowTarget(_player->GetMovement()->GetPosition(), _player->GetFront(), _player->GetUp());
 }
 
 void Game::Render()
 {
-	float aspectRatio = (float)_window->GetSettings().width / (float)_window->GetSettings().height;
+	float aspectRatio = static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT);
 	glm::mat4 proj = _camera->GetProjMatrix(aspectRatio);
 	glm::mat4 view = _camera->GetViewMatrix();
 
@@ -237,7 +238,8 @@ void Game::Render()
 		_renderer->Draw(*_vao, *_ibo, *_shader);
 	}
 
-	_player->Render(*_renderer, view, proj);
+	_player->Render(view, proj);
+	_renderer->Draw(*_player->GetBody()->GetVAO(), *_player->GetBody()->GetIBO(), *_player->GetBody()->GetShader());
 }
 
 void Game::Run()
@@ -252,7 +254,7 @@ void Game::Run()
 		ProcessInput();
 		Update(_renderer->DeltaTime());
 
-		_renderer->BeginFrame(_window);
+		_renderer->BeginFrame();
 		Render();
 
 		// imgui
@@ -262,7 +264,8 @@ void Game::Run()
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		_renderer->EndFrame(_window);
+		_window->SwapBuffers();
+		_renderer->EndFrame();
 	}
 	timeEndPeriod(1);
 }
@@ -283,7 +286,7 @@ void Game::HandleMouseMove(double x, double y)
 	lastX = x;
 	lastY = y;
 
-	_player->Rotate(xOffset * _mouseSensitivity, yOffset * _mouseSensitivity);
+	_player->Rotate(static_cast<float>(xOffset) * _mouseSensitivity, static_cast<float>(yOffset) * _mouseSensitivity);
 }
 
 void Game::HandleScroll(double x, double y)

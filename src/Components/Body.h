@@ -1,10 +1,10 @@
 #ifndef BODY_H
 #define BODY_H
 
-#include "Engine/Rendering/Shaders/Shader.h"
-#include "Engine/Rendering/Textures/Texture.h"
-#include "Engine/Rendering/Buffers/VertexArray.h"
-#include "Engine/Rendering/Buffers/IndexBuffer.h"
+#include "Shaders/Shader.h"
+#include "Textures/Texture.h"
+#include "Buffers/VertexArray.h"
+#include "Buffers/IndexBuffer.h"
 
 class Body
 {
@@ -31,12 +31,12 @@ public:
 class BodyBuilder
 {
 private:
-	std::vector<float> _vertices;
-	std::vector<unsigned int> _indices;
+	std::vector<float> _vertices{};
+	std::vector<unsigned int> _indices{};
 	VertexBufferLayout _layout;
-	std::string_view _vertexPath;
-	std::string_view _fragmentPath;
-	std::string_view _texturePath;
+	std::string_view _vertexPath{};
+	std::string_view _fragmentPath{};
+	std::string_view _texturePath{};
 
 public:
 	BodyBuilder& SetGeometry(const std::vector<float> vertices, const std::vector<unsigned int> indices, const VertexBufferLayout& layout);

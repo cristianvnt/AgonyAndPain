@@ -7,7 +7,8 @@
 class VertexArray
 {
 private:
-	unsigned int _vaoID;
+	unsigned int _vaoID{};
+
 public:
 	VertexArray();
 	~VertexArray();

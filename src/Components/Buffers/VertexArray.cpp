@@ -1,5 +1,7 @@
 #include "VertexArray.h"
 
+#include "Utils/Logger.h"
+
 VertexArray::VertexArray()
 {
 	GL_CHECK(glGenVertexArrays(1, &_vaoID));

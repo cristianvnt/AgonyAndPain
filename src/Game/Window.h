@@ -8,16 +8,20 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-#include "Engine/Settings/WindowSettings.h"
+namespace Settings
+{
+	constexpr const char* TITLE = "Agony and Pain";
+	constexpr int SCREEN_WIDTH = 1920;
+	constexpr int SCREEN_HEIGHT = 1080;
+}
 
 class Window
 {
 private:
-	GLFWwindow* _window;
-	WindowSettings _windowSettings;
+	GLFWwindow* _window{};
 
 public:
-	Window(const WindowSettings& settings);	
+	Window() : _window{ nullptr } {}
 	~Window();
 
 	Window(const Window&) = delete;
@@ -29,7 +33,6 @@ public:
 	bool ShouldClose() const;
 
 	GLFWwindow* GetGLFWwindow() const { return _window; }
-	const WindowSettings& GetSettings() const { return _windowSettings; }
 };
 
 #endif

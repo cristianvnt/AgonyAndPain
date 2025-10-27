@@ -1,8 +1,8 @@
 #include "Game/Game.h"
-#include "Engine/Utils/Paths.h"
+#include "Utils/Paths.h"
 
 int main()
 {
-	Game game(Path::Settings::CONFIG);
+	Game game;
 	game.Run();
 }

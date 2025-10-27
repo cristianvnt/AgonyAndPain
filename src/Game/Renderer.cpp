@@ -1,25 +1,26 @@
 #include "Renderer.h"
-#include "Engine/System/Window.h"
+#include "Window.h"
 
 #include <thread>
 
-Renderer::Renderer(const RendererSettings& settings)
-	: _rendererSettings{ settings },
-	_targetFrameTime{ 1.0 / _rendererSettings.targetFPS },
-	_lastFrameTime{ std::chrono::high_resolution_clock::now() }
+using namespace RendererSettings;
+
+Renderer::Renderer()
 {
+	_targetFrameTime = 1.0 / TARGET_FPS;
+	_lastFrameTime = std::chrono::high_resolution_clock::now();
 }
 
 void Renderer::Initialize()
 {
-	GL_CHECK(glfwSwapInterval(_rendererSettings.vSync));
+	GL_CHECK(glfwSwapInterval(VSYNC));
 	GL_CHECK(glEnable(GL_DEPTH_TEST));
 
 	GL_CHECK(glEnable(GL_BLEND));
 	GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 }
 
-void Renderer::BeginFrame(Window* window)
+void Renderer::BeginFrame()
 {
 	Clear({ 0.2f, 0.3f, 0.3f, 1.0f });
 }
@@ -38,10 +39,8 @@ void Renderer::Draw(const VertexArray& vao, const IndexBuffer& ibo, const Shader
 	GL_CHECK(glDrawElements(GL_TRIANGLES, ibo.GetCount(), GL_UNSIGNED_INT, nullptr));
 }
 
-void Renderer::EndFrame(Window* window)
+void Renderer::EndFrame()
 {
-	window->SwapBuffers();
-
 	CapFPS();
 	_frameTimer.Update();
 	_frameTimer.UpdateFPS();

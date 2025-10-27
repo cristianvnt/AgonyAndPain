@@ -4,8 +4,8 @@
 class VertexBuffer
 {
 private:
-	unsigned int _vboID;
-	unsigned int _size;
+	unsigned int _vboID{};
+	unsigned int _size{};
 
 public:
 	VertexBuffer(const void* data, unsigned int size);

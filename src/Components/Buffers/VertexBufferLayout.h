@@ -3,14 +3,14 @@
 
 #include <vector>
 #include <glad/glad.h>
-#include <Engine/Utils/Logger.h>
+#include <Utils/Logger.h>
 
 
 struct VertexBufferElement
 {
-	unsigned int type;
-	unsigned int count;
-	unsigned char normalized;
+	unsigned int type{};
+	unsigned int count{};
+	unsigned char normalized{};
 
 	static unsigned int GetSizeOfType(unsigned int type)
 	{
@@ -32,11 +32,11 @@ struct VertexBufferElement
 class VertexBufferLayout
 {
 private:
-	std::vector<VertexBufferElement> _elements;
-	unsigned int _stride;
+	std::vector<VertexBufferElement> _elements{};
+	unsigned int _stride{};
 
 public:
-	VertexBufferLayout() : _stride(0) {}
+	VertexBufferLayout() = default;
 
 	template<typename T>
 	VertexBufferLayout& Push(unsigned int count)

@@ -3,7 +3,7 @@
 
 #include "glm/glm.hpp"
 
-#include "Engine/Utils/Logger.h"
+#include "Utils/Logger.h"
 
 #include <string>
 #include <unordered_map>
@@ -18,15 +18,15 @@ struct ShaderProgramSource
 class Shader
 {
 private:
-	unsigned int _shaderProgramID;
-	std::unordered_map<std::string, int> _uniformLocationCache;
+	unsigned int _shaderProgramID{};
+	std::unordered_map<std::string, int> _uniformLocationCache{};
 	std::string _vertexPath;
 	std::string _fragmentPath;
-	std::filesystem::file_time_type _vertexTimeStamp;
-	std::filesystem::file_time_type _fragmentTimeStamp;
+	std::filesystem::file_time_type _vertexTimeStamp{};
+	std::filesystem::file_time_type _fragmentTimeStamp{};
 
 	// reload timer
-	float _timeSinceLastCheck;
+	float _timeSinceLastCheck{};
 
 	void Reload();
 	bool NeedsReload() const;
@@ -36,7 +36,7 @@ private:
 	unsigned int CreateShaderProgram(const std::string& vertexShader, const std::string& fragmentShader);
 
 public:
-	Shader() : _shaderProgramID(0) {}
+	Shader() {}
 	Shader(std::string_view vertexPath, std::string_view fragmentPath);
 	~Shader();
 
