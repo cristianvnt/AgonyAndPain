@@ -30,9 +30,10 @@ public:
 	void Initialize();
 	void BeginFrame();
 	void Clear(const glm::vec4& color) const;
-	void Draw(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const;
-	void DrawObject(const RenderData& data, const glm::mat4& view, const glm::mat4& proj) const;
-	void DrawObject(const RenderData& data, const glm::vec4 color, const glm::mat4& view, const glm::mat4& proj) const;
+
+	// drawing
+	void DrawObject(const RenderData& data, const glm::mat4& view, const glm::mat4& proj, const glm::vec4 color = glm::vec4{ 0.8f, 0.5f, 1.f, 1.f }) const;
+
 	void EndFrame();
 
 	void CapFPS();

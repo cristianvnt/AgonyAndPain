@@ -171,7 +171,7 @@ void Game::Render()
 	{
 		_cubes[i]->SetModel(_cubes[i]->GetMovement()->GetPosition());
 		float randomGreen = (glm::sin(static_cast<float>(glfwGetTime()))) + 0.3f * i;
-		_renderer->DrawObject(_cubes[i]->GetRenderData(), glm::vec4{ 0.8f, 0.5f, randomGreen, 1.f }, view, proj);
+		_renderer->DrawObject(_cubes[i]->GetRenderData(), view, proj, glm::vec4{ 0.8f, 0.5f, randomGreen, 1.f });
 	}
 
 	_renderer->DrawObject(_player->GetRenderData(), view, proj);
