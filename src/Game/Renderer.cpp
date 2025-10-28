@@ -40,8 +40,12 @@ void Renderer::DrawObject(const RenderData& data, const glm::mat4& view, const g
 	data.ibo->Bind();
 	data.texture->Bind();
 
-	data.shader->SetUniform1i("u_Texture", 0);
-	data.shader->SetUniformVec4("someColor", data.color);
+	if (data.shader->GetUniformLocation("u_Texture") != -1)
+		data.shader->SetUniform1i("u_Texture", 0);
+
+	if (data.shader->GetUniformLocation("someColor") != -1)
+		data.shader->SetUniformVec4("someColor", data.color);
+
 	data.shader->SetUniformMat4f("u_Model", data.model);
 	data.shader->SetUniformMat4f("u_View", view);
 	data.shader->SetUniformMat4f("u_Proj", proj);

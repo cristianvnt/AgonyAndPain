@@ -150,8 +150,6 @@ int Shader::GetUniformLocation(const std::string& name)
 
 	int location;
 	GL_CHECK(location = glGetUniformLocation(_shaderProgramID, name.c_str()));
-	if (location == -1)
-		std::cout << "AAAAAA WARNING: uniform " << name << " doesn't exist!\n";
 
 	_uniformLocationCache[name] = location;
 	return location;
