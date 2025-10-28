@@ -14,6 +14,8 @@ namespace Path
 		constexpr std::string_view FRAGMENT = "C:/Users/Cristi/Desktop/AgonyAndPain/resources/shaders/shader.frag";
 		constexpr std::string_view VERTEX_PLAYER = "C:/Users/Cristi/Desktop/AgonyAndPain/resources/shaders/player.vert";
 		constexpr std::string_view FRAGMENT_PLAYER = "C:/Users/Cristi/Desktop/AgonyAndPain/resources/shaders/player.frag";
+		constexpr std::string_view VERTEX_TERRAIN = "C:/Users/Cristi/Desktop/AgonyAndPain/resources/shaders/terrain.vert";
+		constexpr std::string_view FRAGMENT_TERRAIN = "C:/Users/Cristi/Desktop/AgonyAndPain/resources/shaders/terrain.frag";
 	}
 
 	namespace Texture

@@ -22,9 +22,15 @@ Cube& Cube::SetAngle(float angle)
 	return *this;
 }
 
-Cube& Cube::SetModel(const glm::vec3& pos)
+Cube& Cube::SetModel(const glm::vec3& axis)
 {
-	_renderData.model = glm::rotate(_renderData.model, glm::radians(_angle), pos);
+	_renderData.model = glm::rotate(_renderData.model, glm::radians(_angle), axis);
+	return *this;
+}
+
+Cube& Cube::SetColor(const glm::vec4& col)
+{
+	_renderData.color = col;
 	return *this;
 }
 

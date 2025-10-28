@@ -9,12 +9,6 @@
 #include "Components/Shaders/Shader.h"
 #include "Components/RenderData.h"
 
-namespace RendererSettings
-{
-	constexpr int TARGET_FPS = 60;
-	constexpr int VSYNC = 0;
-}
-
 class Renderer
 {
 private:
@@ -32,7 +26,7 @@ public:
 	void Clear(const glm::vec4& color) const;
 
 	// drawing
-	void DrawObject(const RenderData& data, const glm::mat4& view, const glm::mat4& proj, const glm::vec4 color = glm::vec4{ 0.8f, 0.5f, 1.f, 1.f }) const;
+	void DrawObject(const RenderData& data, const glm::mat4& view, const glm::mat4& proj) const;
 
 	void EndFrame();
 

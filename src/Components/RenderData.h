@@ -13,6 +13,7 @@ struct RenderData
 	IndexBuffer* ibo{};
 	Shader* shader{};
 	Texture* texture{};
+	glm::vec4 color{};
 };
 
 #endif

@@ -38,8 +38,6 @@ private:
 	float _yaw{};
 	float _pitch{};
 
-	void UpdateRenderData();
-	void UpdateVectors();
 public:
 	Player(Body* body, Movement* movement);
 	~Player();
@@ -56,6 +54,10 @@ public:
 	const glm::vec3& GetUp() const { return _up; }
 
 	Player& SetSpeed(float speed) { _speed = speed; return *this; }
+
+private:
+	void UpdateRenderData();
+	void UpdateVectors();
 };
 
 #endif

@@ -1,5 +1,5 @@
 #include "Player.h"
-#include <glm/ext/matrix_transform.hpp>
+#include "glm/ext/matrix_transform.hpp"
 
 Player::Player(Body* body, Movement* movement)
 	: _body{ body }, _movement{ movement }, _speed{ 1.f }
@@ -24,6 +24,7 @@ void Player::ProcessInput(InputState& input)
 {
 	glm::vec3 velocity{0.f};
 	_movement->SetVelocity(velocity);
+
 	if (input.moveForward)
 		velocity += _front;
 	if (input.moveBackward)
@@ -63,6 +64,7 @@ void Player::UpdateRenderData()
 	glm::mat4 m = glm::translate(glm::mat4(1.0f), _movement->GetPosition());
 	m = glm::rotate(m, glm::radians(-_yaw), glm::vec3{ 0.f, 1.f, 0.f });
 	m = glm::rotate(m, glm::radians(_pitch), glm::vec3{ 0.f, 0.f, 1.f });
+
 	_renderData.model = m;
 	_renderData.vao = _body->GetVAO();
 	_renderData.ibo = _body->GetIBO();

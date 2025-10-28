@@ -3,6 +3,9 @@
 #include <iostream>
 
 #include "Utils/Logger.h"
+#include "Utils/Settings.h"
+
+using namespace SETTINGS;
 
 Window::~Window()
 {
@@ -33,7 +36,7 @@ bool Window::Initialize()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	_window = glfwCreateWindow(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT, Settings::TITLE, nullptr, nullptr);
+	_window = glfwCreateWindow(GAME::SCREEN_WIDTH, GAME::SCREEN_HEIGHT, GAME::TITLE, nullptr, nullptr);
 	if (!_window)
 	{
 		std::cout << "NOOOOO ERROR: GLFW window failed.\n";

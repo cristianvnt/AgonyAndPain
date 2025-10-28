@@ -6,6 +6,7 @@
 #include "Actors/Camera.h"
 #include "Actors/Player.h"
 #include "Actors/Cube.h"
+#include "Terrain/Terrain.h"
 
 class Game
 {
@@ -15,6 +16,7 @@ private:
 	Camera* _camera{};
 	Player* _player{};
 	std::vector<Cube*> _cubes{};
+	Terrain* _terrain{};
 
 	InputState _input{};
 
@@ -23,10 +25,6 @@ private:
 	bool _cursorJustDisabled{};
 	float _mouseSensitivity{};
 
-	void Initialize();
-	void ProcessInput();
-	void Update(double deltaTime);
-	void Render();
 public:
 	Game();
 	~Game();
@@ -39,6 +37,12 @@ public:
 	// handlers
 	void HandleMouseMove(double x, double y);
 	void HandleScroll(double x, double y);
+
+private:
+	void Initialize();
+	void ProcessInput();
+	void Update(double deltaTime);
+	void Render();
 };
 
 #endif

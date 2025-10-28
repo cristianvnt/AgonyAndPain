@@ -9,14 +9,15 @@
 class Body
 {
 private:
-	VertexArray* _vao;
-	VertexBuffer* _vbo;
-	IndexBuffer* _ibo;
-	Shader* _shader;
-	Texture* _texture;
+	VertexArray* _vao{};
+	VertexBuffer* _vbo{};
+	IndexBuffer* _ibo{};
+	Shader* _shader{};
+	Texture* _texture{};
+	glm::vec4 _color{};
 	
 public:
-	Body(VertexArray* vao, VertexBuffer* vbo, IndexBuffer* ibo, Shader* shader, Texture* texture);
+	Body(VertexArray* vao, VertexBuffer* vbo, IndexBuffer* ibo, Shader* shader, Texture* texture, const glm::vec4& color = glm::vec4{ 1.f });
 	~Body();
 
 	Body(const Body&) = delete;
@@ -26,6 +27,7 @@ public:
 	IndexBuffer* GetIBO() const { return _ibo; }
 	Shader* GetShader() const { return _shader; }
 	Texture* GetTexture() const { return _texture; }
+	const glm::vec4& GetColor() const { return _color; }
 };
 
 class BodyBuilder
@@ -37,11 +39,13 @@ private:
 	std::string_view _vertexPath{};
 	std::string_view _fragmentPath{};
 	std::string_view _texturePath{};
+	glm::vec4 _color{};
 
 public:
-	BodyBuilder& SetGeometry(const std::vector<float> vertices, const std::vector<unsigned int> indices, const VertexBufferLayout& layout);
+	BodyBuilder& SetGeometry(const std::vector<float>& vertices, const std::vector<unsigned int>& indices, const VertexBufferLayout& layout);
 	BodyBuilder& SetShader(std::string_view vertexPath, std::string_view fragmentPath);
 	BodyBuilder& SetTexture(std::string_view texturePath);
+	BodyBuilder& SetColor(const glm::vec4& color = glm::vec4{ 1.f });
 	Body* Build();
 };
 

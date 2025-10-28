@@ -5,14 +5,16 @@
 
 #include "Game.h"
 #include "Utils/Paths.h"
+#include "Utils/Settings.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 
-using namespace Settings;
+using namespace SETTINGS;
 
 Game::Game() : _isRunning{ false },
 	_window{ nullptr }, _renderer{ nullptr },
-	_camera{ nullptr }, _player{ nullptr }
+	_camera{ nullptr }, _player{ nullptr },
+	_terrain{ nullptr }
 {
 	_window = new (std::nothrow) Window;
 	_renderer = new (std::nothrow) Renderer;
@@ -31,9 +33,9 @@ Game::Game() : _isRunning{ false },
 
 Game::~Game()
 {
+	delete _terrain;
 	for (Cube* cube : _cubes)
 		delete cube;
-
 	delete _player;
 
 	delete _window;
@@ -44,9 +46,9 @@ Game::~Game()
 void Game::Initialize()
 {
 	std::cout << "Initializing game...\n";
-	std::cout << "Title: " << TITLE << "\n";
-	std::cout << "Resolution: " << SCREEN_WIDTH << "x" << SCREEN_HEIGHT << "\n";
-	std::cout << "Target FPS: " << RendererSettings::TARGET_FPS << "\n";
+	std::cout << "Title: " << GAME::TITLE << "\n";
+	std::cout << "Resolution: " << GAME::SCREEN_WIDTH << "x" << GAME::SCREEN_HEIGHT << "\n";
+	std::cout << "Target FPS: " << RENDERER::TARGET_FPS << "\n";
 
 	if (!_window->Initialize())
 	{
@@ -57,6 +59,15 @@ void Game::Initialize()
 	_renderer->Initialize();
 
 	_mouseSensitivity = SENSITIVITY;
+
+	_terrain = new Terrain(
+		BodyBuilder()
+		.SetGeometry(GetTerrainVertices(), GetTerrainIndices(), GetLayout())
+		.SetShader(Path::Shader::VERTEX_TERRAIN, Path::Shader::FRAGMENT_TERRAIN)
+		.SetColor(glm::vec4{ 0.5f, 0.5f, 0.5f, 1.f })
+		.Build(),
+		TERRAIN::POSITION
+	);
 
 	for (int i = 0; i < GetPositions().size(); ++i)
 	{
@@ -149,29 +160,34 @@ void Game::ProcessInput()
 
 void Game::Update(double deltaTime)
 {
+	_terrain->Update(static_cast<float>(deltaTime));
+	_terrain->GetRenderData().shader->ReloadChanges(static_cast<float>(deltaTime));
+
 	for (Cube* cube : _cubes)
 	{
 		cube->Update(static_cast<float>(deltaTime));
-		cube->GetRenderData().shader->ReloadChanges(static_cast<float>(_renderer->DeltaTime()));
+		cube->GetRenderData().shader->ReloadChanges(static_cast<float>(deltaTime));
 	}
 	
 	_player->Update(static_cast<float>(deltaTime));
-	_player->GetRenderData().shader->ReloadChanges(static_cast<float>(_renderer->DeltaTime()));
+	_player->GetRenderData().shader->ReloadChanges(static_cast<float>(deltaTime));
 
 	_camera->FollowTarget(_player->GetMovement()->GetPosition(), _player->GetFront(), _player->GetUp());
 }
 
 void Game::Render()
 {
-	float aspectRatio = static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT);
+	float aspectRatio = static_cast<float>(GAME::SCREEN_WIDTH) / static_cast<float>(GAME::SCREEN_HEIGHT);
 	glm::mat4 proj = _camera->GetProjMatrix(aspectRatio);
 	glm::mat4 view = _camera->GetViewMatrix();
 
+	_renderer->DrawObject(_terrain->GetRenderData(), view, proj);
+
 	for (int i = 0; i < _cubes.size(); ++i)
 	{
-		_cubes[i]->SetModel(_cubes[i]->GetMovement()->GetPosition());
 		float randomGreen = (glm::sin(static_cast<float>(glfwGetTime()))) + 0.3f * i;
-		_renderer->DrawObject(_cubes[i]->GetRenderData(), view, proj, glm::vec4{ 0.8f, 0.5f, randomGreen, 1.f });
+		_cubes[i]->SetColor(glm::vec4{ 0.8f, 0.5f, randomGreen, 1.f }).SetModel(_cubes[i]->GetMovement()->GetPosition());
+		_renderer->DrawObject(_cubes[i]->GetRenderData(), view, proj);
 	}
 
 	_renderer->DrawObject(_player->GetRenderData(), view, proj);

@@ -3,17 +3,19 @@
 
 #include <thread>
 
-using namespace RendererSettings;
+#include "Utils/Settings.h"
+
+using namespace SETTINGS;
 
 Renderer::Renderer()
 {
-	_targetFrameTime = 1.0 / TARGET_FPS;
+	_targetFrameTime = 1.0 / RENDERER::TARGET_FPS;
 	_lastFrameTime = std::chrono::high_resolution_clock::now();
 }
 
 void Renderer::Initialize()
 {
-	GL_CHECK(glfwSwapInterval(VSYNC));
+	GL_CHECK(glfwSwapInterval(RENDERER::VSYNC));
 	GL_CHECK(glEnable(GL_DEPTH_TEST));
 
 	GL_CHECK(glEnable(GL_BLEND));
@@ -31,7 +33,7 @@ void Renderer::Clear(const glm::vec4& color) const
 	GL_CHECK(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
 
-void Renderer::DrawObject(const RenderData& data, const glm::mat4& view, const glm::mat4& proj, const glm::vec4 color /*= glm::vec4{ 0.8f, 0.5f, 1.f, 1.f }*/) const
+void Renderer::DrawObject(const RenderData& data, const glm::mat4& view, const glm::mat4& proj) const
 {
 	data.shader->Bind();
 	data.vao->Bind();
@@ -39,7 +41,7 @@ void Renderer::DrawObject(const RenderData& data, const glm::mat4& view, const g
 	data.texture->Bind();
 
 	data.shader->SetUniform1i("u_Texture", 0);
-	data.shader->SetUniformVec4("someColor", color);
+	data.shader->SetUniformVec4("someColor", data.color);
 	data.shader->SetUniformMat4f("u_Model", data.model);
 	data.shader->SetUniformMat4f("u_View", view);
 	data.shader->SetUniformMat4f("u_Proj", proj);

@@ -8,13 +8,6 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-namespace Settings
-{
-	constexpr const char* TITLE = "Agony and Pain";
-	constexpr int SCREEN_WIDTH = 1920;
-	constexpr int SCREEN_HEIGHT = 1080;
-}
-
 class Window
 {
 private:
