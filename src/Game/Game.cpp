@@ -108,20 +108,11 @@ void Game::Initialize()
 				game->HandleScroll(x, y);
 		});
 
-	// imgui
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-
-	ImGui_ImplGlfw_InitForOpenGL(_window->GetGLFWwindow(), true);
-	ImGui_ImplOpenGL3_Init();
-
 	_isRunning = true;
 	std::cout << "YIPPEEEEEEEE\n";
 }
 
-void Game::ProcessInput()
+void Game::ProcessInput(bool isCollision)
 {
 	_window->PollEvents();
 	
@@ -133,6 +124,9 @@ void Game::ProcessInput()
 		_input.moveLeft = true;
 	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_D) == GLFW_PRESS)
 		_input.moveRight = true;
+
+	_player->SetCollision(CheckCollision());
+
 	_player->ProcessInput(_input);
 	_input.ResetStates();
 
@@ -198,27 +192,22 @@ void Game::Run()
 	timeBeginPeriod(1);
 	while (_isRunning && !_window->ShouldClose())
 	{
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		ProcessInput();
+		ProcessInput(CheckCollision());
 		Update(_renderer->DeltaTime());
 
 		_renderer->BeginFrame();
 		Render();
 
-		// imgui
-		ImGui::Begin("BLABLABLA");
-		ImGui::Text("Application average %.3lf ms/frame (%d FPS)", 1000.0 / _renderer->GetFPS(), _renderer->GetFPS());
-		ImGui::End();
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
 		_window->SwapBuffers();
 		_renderer->EndFrame();
 	}
 	timeEndPeriod(1);
+}
+
+bool Game::CheckCollision()
+{
+	return _player->GetPosition().y <= _terrain->GetPos().y + 0.7f &&
+		_player->GetPosition().x <= 25.f && _player->GetPosition().x >= -25.f && _player->GetPosition().z >= -25.f && _player->GetPosition().z <= 25.f;
 }
 
 void Game::HandleMouseMove(double x, double y)

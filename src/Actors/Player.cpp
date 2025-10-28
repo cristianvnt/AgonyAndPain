@@ -1,8 +1,14 @@
 #include "Player.h"
 #include "glm/ext/matrix_transform.hpp"
 
+#include "Utils/Settings.h"
+
+#include <iostream>
+
+using namespace SETTINGS;
+
 Player::Player(Body* body, Movement* movement)
-	: _body{ body }, _movement{ movement }, _speed{ 1.f }
+	: _body{ body }, _movement{ movement }, _speed{ 1.f }, _isCollision{ false }
 {
 	_up = glm::vec3{ 0.f, 1.f, 0.f };
 	_worldUp = _up;
@@ -25,22 +31,35 @@ void Player::ProcessInput(InputState& input)
 	glm::vec3 velocity{0.f};
 	_movement->SetVelocity(velocity);
 
+	glm::vec3 front = _front;
+	glm::vec3 right = _right;
+
+	if (_isCollision && (_front.y < 0.f && input.moveForward || _front.y > 0 && input.moveBackward))
+	{
+		std::cout << "COLLISIOOOOOOON\n";
+		front.y = 0.f;
+	}
+
 	if (input.moveForward)
-		velocity += _front;
+		velocity += front;
 	if (input.moveBackward)
-		velocity -= _front;
+		velocity -= front;
 	if (input.moveLeft)
-		velocity -= _right;
+		velocity -= right;
 	if (input.moveRight)
-		velocity += _right;
+		velocity += right;
 
 	if (velocity == glm::vec3{ 0.f })
 		return;
+
+	std::cout << "x:" << _movement->GetPosition().x << " y:" << _movement->GetPosition().y << " z:" << _movement->GetPosition().z << "\n";
 	_movement->SetVelocity(glm::normalize(velocity) * _speed);
 }
 
 void Player::Update(double deltaTime)
 {
+	/*if (!_isCollision)
+		AddGravity(GAME::GRAVITY);*/
 	_movement->Update(static_cast<float>(deltaTime));
 	UpdateRenderData();
 }
@@ -57,6 +76,16 @@ void Player::Rotate(float yawOffset, float pitchOffset)
 	_pitch = glm::clamp(_pitch, -89.f, 89.f);
 
 	UpdateVectors();
+}
+
+void Player::AddGravity(float g)
+{
+	_movement->GetVelocity().y += (-1 * g);
+}
+
+void Player::SetCollision(bool isCollision /*= false*/)
+{
+	_isCollision = isCollision;
 }
 
 void Player::UpdateRenderData()

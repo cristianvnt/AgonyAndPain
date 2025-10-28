@@ -21,6 +21,11 @@ void Terrain::Update(float deltaTime)
 	UpdateRenderData();
 }
 
+Body* Terrain::GetBody() const
+{
+	return _body;
+}
+
 const glm::vec3& Terrain::GetPos() const
 {
 	return _position;
@@ -35,7 +40,7 @@ void Terrain::UpdateRenderData()
 {
 	glm::mat4 model = glm::translate(glm::mat4(1.f), _position);
 	model = glm::rotate(model, glm::radians(TERRAIN::ANGLE), glm::vec3{ 1.f, 0.f, 0.f });
-	model = glm::scale(model, glm::vec3{ 50.f, 50.f, 0.f });
+	model = glm::scale(model, glm::vec3{ TERRAIN::SCALE, TERRAIN::SCALE, 0.f });
 
 	_renderData.model = model;
 	_renderData.vao = _body->GetVAO();

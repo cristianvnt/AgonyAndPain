@@ -17,6 +17,8 @@ public:
 	
 	const glm::vec3& GetPosition() const { return _position; }
 	const glm::vec3& GetVelocity() const { return _velocity; }
+	glm::vec3& GetPosition() { return _position; }
+	glm::vec3& GetVelocity() { return _velocity; }
 
 	Movement& SetPosition(const glm::vec3& pos) { _position = pos; return *this; }
 	Movement& SetVelocity(const glm::vec3& velocity) { _velocity = velocity; return *this; }

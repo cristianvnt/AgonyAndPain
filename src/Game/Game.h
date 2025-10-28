@@ -33,6 +33,7 @@ public:
 	Game& operator=(const Game&) = delete;
 
 	void Run();
+	bool CheckCollision();
 
 	// handlers
 	void HandleMouseMove(double x, double y);
@@ -40,7 +41,7 @@ public:
 
 private:
 	void Initialize();
-	void ProcessInput();
+	void ProcessInput(bool isCollision);
 	void Update(double deltaTime);
 	void Render();
 };

@@ -19,6 +19,7 @@ public:
 
 	void Update(float deltaTime);
 
+	Body* GetBody() const;
 	const glm::vec3& GetPos() const;
 	RenderData& GetRenderData();
 
