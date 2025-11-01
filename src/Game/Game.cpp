@@ -208,7 +208,7 @@ void Game::Run()
 
 bool Game::CheckCollision()
 {
-	return _player->GetPosition().y <= _terrain->GetPos().y + 0.7f &&
+	return _player->GetPosition().y >= _terrain->GetPos().y && _player->GetPosition().y <= _terrain->GetPos().y + 0.7f &&
 		_player->GetPosition().x <= 25.f && _player->GetPosition().x >= -25.f && _player->GetPosition().z >= -25.f && _player->GetPosition().z <= 25.f;
 }
 
