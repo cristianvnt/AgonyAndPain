@@ -58,8 +58,9 @@ void Player::ProcessInput(InputState& input)
 
 void Player::Update(double deltaTime)
 {
-	/*if (!_isCollision)
-		AddGravity(GAME::GRAVITY);*/
+	if (!_isCollision)
+		AddGravity(GAME::GRAVITY);
+
 	_movement->Update(static_cast<float>(deltaTime));
 	UpdateRenderData();
 }
@@ -81,6 +82,7 @@ void Player::Rotate(float yawOffset, float pitchOffset)
 void Player::AddGravity(float g)
 {
 	_movement->GetVelocity().y += (-1 * g);
+	std::cout << "Gravity Added\n";
 }
 
 void Player::SetCollision(bool isCollision /*= false*/)

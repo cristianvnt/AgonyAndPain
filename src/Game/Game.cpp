@@ -126,7 +126,6 @@ void Game::ProcessInput(bool isCollision)
 		_input.moveRight = true;
 
 	_player->SetCollision(CheckCollision());
-
 	_player->ProcessInput(_input);
 	_input.ResetStates();
 
@@ -164,6 +163,9 @@ void Game::Update(double deltaTime)
 	}
 	
 	_player->Update(static_cast<float>(deltaTime));
+	if (_player->IsCollision())
+		_player->GetMovement()->SetVelocity(glm::vec3{ 0.f });
+
 	_player->GetRenderData().shader->ReloadChanges(static_cast<float>(deltaTime));
 
 	_camera->FollowTarget(_player->GetMovement()->GetPosition(), _player->GetFront(), _player->GetUp());
