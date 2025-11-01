@@ -12,6 +12,7 @@ struct InputState
 	bool moveBackward = false;
 	bool moveLeft = false;
 	bool moveRight = false;
+	bool moveUpward = false;
 
 	void ResetStates()
 	{
@@ -19,6 +20,7 @@ struct InputState
 		moveBackward = false;
 		moveLeft = false;
 		moveRight = false;
+		moveUpward = false;
 	}
 };
 
@@ -44,11 +46,10 @@ public:
 	~Player();
 
 	void ProcessInput(InputState& input);
-	void Update(double deltaTime);
+	void Update(InputState& input, double deltaTime);
 	RenderData& GetRenderData();
 	
 	void Rotate(float yawOffset, float pitchOffset);
-	void AddGravity(float g);
 
 	Body* GetBody() { return _body; }
 	Movement* GetMovement() { return _movement; }
@@ -64,6 +65,8 @@ public:
 
 	void SetCollision(bool isCollision = false);
 	bool IsCollision() const { return _isCollision; }
+
+	void ApplyGravity();
 
 private:
 	void UpdateRenderData();

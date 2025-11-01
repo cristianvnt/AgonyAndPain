@@ -33,11 +33,12 @@ void Player::ProcessInput(InputState& input)
 
 	glm::vec3 front = _front;
 	glm::vec3 right = _right;
+	glm::vec3 up = _worldUp;
 
-	if (_isCollision && (_front.y < 0.f && input.moveForward || _front.y > 0 && input.moveBackward))
+	if (_isCollision)
 	{
-		std::cout << "COLLISIOOOOOOON\n";
 		front.y = 0.f;
+		std::cout << "COLLISIOOOOOOON\n";
 	}
 
 	if (input.moveForward)
@@ -48,6 +49,8 @@ void Player::ProcessInput(InputState& input)
 		velocity -= right;
 	if (input.moveRight)
 		velocity += right;
+	if (input.moveUpward)
+		velocity += up;
 
 	if (velocity == glm::vec3{ 0.f })
 		return;
@@ -56,10 +59,10 @@ void Player::ProcessInput(InputState& input)
 	_movement->SetVelocity(glm::normalize(velocity) * _speed);
 }
 
-void Player::Update(double deltaTime)
+void Player::Update(InputState& input, double deltaTime)
 {
-	if (!_isCollision)
-		AddGravity(GAME::GRAVITY);
+	if (!_isCollision && !input.moveUpward)
+		ApplyGravity();
 
 	_movement->Update(static_cast<float>(deltaTime));
 	UpdateRenderData();
@@ -79,15 +82,15 @@ void Player::Rotate(float yawOffset, float pitchOffset)
 	UpdateVectors();
 }
 
-void Player::AddGravity(float g)
-{
-	_movement->GetVelocity().y += (-1 * g);
-	std::cout << "Gravity Added\n";
-}
-
 void Player::SetCollision(bool isCollision /*= false*/)
 {
 	_isCollision = isCollision;
+}
+
+void Player::ApplyGravity()
+{
+	_movement->GetVelocity().y += (-1.f * GAME::GRAVITY);
+	std::cout << "REAL GRAVITYY\n";
 }
 
 void Player::UpdateRenderData()

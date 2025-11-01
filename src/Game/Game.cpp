@@ -124,10 +124,11 @@ void Game::ProcessInput(bool isCollision)
 		_input.moveLeft = true;
 	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_D) == GLFW_PRESS)
 		_input.moveRight = true;
+	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
+		_input.moveUpward = true;
 
 	_player->SetCollision(CheckCollision());
 	_player->ProcessInput(_input);
-	_input.ResetStates();
 
 	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		_isRunning = false;
@@ -162,10 +163,8 @@ void Game::Update(double deltaTime)
 		cube->GetRenderData().shader->ReloadChanges(static_cast<float>(deltaTime));
 	}
 	
-	_player->Update(static_cast<float>(deltaTime));
-	if (_player->IsCollision())
-		_player->GetMovement()->SetVelocity(glm::vec3{ 0.f });
-
+	_player->Update(_input, static_cast<float>(deltaTime));
+	_input.ResetStates();
 	_player->GetRenderData().shader->ReloadChanges(static_cast<float>(deltaTime));
 
 	_camera->FollowTarget(_player->GetMovement()->GetPosition(), _player->GetFront(), _player->GetUp());
