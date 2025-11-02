@@ -10,7 +10,7 @@ namespace SETTINGS
 		constexpr const char* TITLE = "Agony and Pain";
 		constexpr int SCREEN_WIDTH = 1920;
 		constexpr int SCREEN_HEIGHT = 1080;
-		constexpr float GRAVITY = 5.f;
+		constexpr float GRAVITY = 10.f;
 	}
 
 	namespace TERRAIN

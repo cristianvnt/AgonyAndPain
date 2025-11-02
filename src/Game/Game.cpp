@@ -6,15 +6,16 @@
 #include "Game.h"
 #include "Utils/Paths.h"
 #include "Utils/Settings.h"
+#include "Utils/Utils.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 
 using namespace SETTINGS;
 
 Game::Game() : _isRunning{ false },
-	_window{ nullptr }, _renderer{ nullptr },
-	_camera{ nullptr }, _player{ nullptr },
-	_terrain{ nullptr }
+_window{ nullptr }, _renderer{ nullptr },
+_camera{ nullptr }, _player{ nullptr },
+_terrain{ nullptr }
 {
 	_window = new (std::nothrow) Window;
 	_renderer = new (std::nothrow) Renderer;
@@ -69,15 +70,19 @@ void Game::Initialize()
 		TERRAIN::POSITION
 	);
 
-	for (int i = 0; i < GetPositions().size(); ++i)
+	std::vector<glm::vec3> cubePositions = Utils::Cube::GetPositions();
+	std::vector<float> cubeVertices = Utils::Cube::GetVertices();
+	std::vector<unsigned int> cubeIndices = Utils::Cube::GetIndices();
+
+	for (int i = 0; i < cubePositions.size(); ++i)
 	{
 		Cube* cube = new Cube(
 			BodyBuilder()
-			.SetGeometry(GetVertices(), GetIndices(), GetLayout())
+			.SetGeometry(cubeVertices, cubeIndices, GetLayout())
 			.SetShader(Path::Shader::VERTEX, Path::Shader::FRAGMENT)
 			.SetTexture(Path::Texture::CONTAINER)
 			.Build(),
-			new Movement(GetPositions()[i])
+			new Movement(cubePositions[i])
 		);
 		cube->SetAngle(20.f * i);
 		_cubes.emplace_back(cube);
@@ -85,7 +90,7 @@ void Game::Initialize()
 
 	_player = new Player{
 		BodyBuilder()
-			.SetGeometry(GetVertices(), GetIndices(), GetLayout())
+			.SetGeometry(cubeVertices, cubeIndices, GetLayout())
 			.SetShader(Path::Shader::VERTEX_PLAYER, Path::Shader::FRAGMENT_PLAYER)
 			.SetTexture(Path::Texture::FACE)
 			.Build(),
@@ -115,7 +120,7 @@ void Game::Initialize()
 void Game::ProcessInput(bool isCollision)
 {
 	_window->PollEvents();
-	
+
 	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_W) == GLFW_PRESS)
 		_input.moveForward = true;
 	if (glfwGetKey(_window->GetGLFWwindow(), GLFW_KEY_S) == GLFW_PRESS)
@@ -162,7 +167,7 @@ void Game::Update(double deltaTime)
 		cube->Update(static_cast<float>(deltaTime));
 		cube->GetRenderData().shader->ReloadChanges(static_cast<float>(deltaTime));
 	}
-	
+
 	_player->Update(_input, static_cast<float>(deltaTime));
 	_input.ResetStates();
 	_player->GetRenderData().shader->ReloadChanges(static_cast<float>(deltaTime));
